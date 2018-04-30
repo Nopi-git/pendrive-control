@@ -5,16 +5,18 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ControlGUI {
 
@@ -23,7 +25,7 @@ public class ControlGUI {
 
     public ControlGUI(Stage stage){
         this.menu = menuScene();
-        this.controlPage = controlScene();
+        this.controlPage = new Scene(controlScene(), 800, 300);
         this.stage = stage;
     }
 
@@ -57,7 +59,7 @@ public class ControlGUI {
     }
 
 
-    public Scene controlScene(){
+    public GridPane controlScene(){
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
@@ -69,12 +71,9 @@ public class ControlGUI {
 
         TextField armValue = new TextField();
         armId.setLabelFor(armValue);
-        armValue.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d{0,4}?")) {
-                    armValue.setText(oldValue);
-                }
+        armValue.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d{0,4}?")) {
+                armValue.setText(oldValue);
             }
         });
         armValue.setFont(Font.font("Arial", FontWeight.BOLD, 12));
@@ -85,8 +84,82 @@ public class ControlGUI {
 
         gridPane.setStyle("-fx-background-color: #C0C0C0;");
 
-        return new Scene(gridPane, 800, 300);
 
+        Label system = new Label("System");
+        system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        VBox vbox1 = new VBox(system);
+
+        CheckBox checkBox1 = new CheckBox("PC");
+        CheckBox checkBox2 = new CheckBox("Monitor");
+        CheckBox checkBox3 = new CheckBox("Ticket printer");
+        CheckBox checkBox4 = new CheckBox("Offerta printer");
+        CheckBox checkBox5 = new CheckBox("Scanner");
+        CheckBox checkBox6 = new CheckBox("Raspberry");
+        CheckBox checkBox7 = new CheckBox("Casa");
+
+        List<CheckBox> checkBoxes = Arrays.asList(checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6, checkBox7);
+        checkBoxes.forEach(checkBox -> checkBox.setVisible(false));
+
+        ToggleGroup problemGroup = new ToggleGroup();
+        RadioButton okButton = new RadioButton("Everything ok");
+        okButton.setToggleGroup(problemGroup);
+        okButton.setSelected(true);
+        okButton.setPadding(new Insets(5,0,5,0));
+        RadioButton notOkButton = new RadioButton("not ok");
+        notOkButton.setToggleGroup(problemGroup);
+
+
+        ToggleGroup fixedGroup = new ToggleGroup();
+        RadioButton fixed = new RadioButton("fixed");
+        fixed.setToggleGroup(fixedGroup);
+        fixed.setPadding(new Insets(5,0,5,0));
+        RadioButton notFixed = new RadioButton("not fixed");
+        notFixed.setToggleGroup(fixedGroup);
+        fixed.setVisible(false);
+        notFixed.setVisible(false);
+
+        notOkButton.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+            if (isNowSelected) {
+                checkBoxes.forEach(checkBox -> checkBox.setVisible(true));
+                fixed.setVisible(true);
+                notFixed.setVisible(true);
+            } else {
+                checkBoxes.forEach(checkBox -> checkBox.setVisible(false));
+                fixed.setVisible(false);
+                notFixed.setVisible(false);
+            }
+        });
+
+        fixedGroupEventHandler(checkBoxes, fixed);
+        fixedGroupEventHandler(checkBoxes, notFixed);
+
+        checkBoxes.forEach(checkBox -> checkBox.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+            if(checkBoxes.stream().noneMatch(CheckBox::isSelected)){
+                fixed.setSelected(false);
+                notFixed.setSelected(false);
+            }
+        }));
+
+        vbox1.getChildren().addAll(okButton, notOkButton);
+        vbox1.getChildren().addAll(checkBoxes);
+        vbox1.getChildren().addAll(fixed, notFixed);
+
+        gridPane.add(vbox1, 1, 2);
+
+        return gridPane;
+
+    }
+
+    private void fixedGroupEventHandler(List<CheckBox> checkBoxes, RadioButton notFixed) {
+        notFixed.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+            if (checkBoxes.stream().anyMatch(CheckBox::isSelected)) {
+                if(isNowSelected){
+                    notFixed.setSelected(true);
+                }
+            } else {
+                notFixed.setSelected(false);
+            }
+        });
     }
 
 }
