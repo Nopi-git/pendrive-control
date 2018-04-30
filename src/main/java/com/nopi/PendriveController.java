@@ -23,7 +23,6 @@ import java.io.IOException;
 
 public class PendriveController extends Application {
 
-    Scene menu, controlPage, cashPage, errorPage;
 
     public static void main(String[] args) {
 
@@ -45,9 +44,9 @@ public class PendriveController extends Application {
 
         primaryStage.setTitle("ArminBet-Control");
 
-        menu = new Scene(ControlGUI.addMenuButtons(), 320, 80);
+        ControlGUI gui = new ControlGUI(primaryStage);
 
-        primaryStage.setScene(menu);
+        primaryStage.setScene(gui.menu);
         primaryStage.show();
     }
 }
