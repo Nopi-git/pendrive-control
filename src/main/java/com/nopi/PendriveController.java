@@ -51,65 +51,7 @@ public class PendriveController extends Application {
         Text scenetitle = new Text("Control");
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         gridPane.add(scenetitle, 0, 0, 2, 1);
-
-        Label userName = new Label("ARM:");
-        gridPane.add(userName, 0, 1);
-
-        TextField armTextField = new TextField();
-
-        armTextField.setMaxWidth(50);
-
-        gridPane.add(armTextField, 1, 1);
-
-        Label descTextField = new Label("Description:");
-        gridPane.add(descTextField, 0, 2);
-
-        TextArea descBox = new TextArea();
-        descBox.setMinHeight(50);
-        descBox.setWrapText(true);
-        descBox.setMaxWidth(300);
-
-        gridPane.add(descBox, 1, 2);
-
-        Button btn = ControlGUI.submitButton(gridPane);
-        armTextField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue,
-                                String newValue) {
-                if (!newValue.matches("\\d*")) {
-                    armTextField.setText(newValue.replaceAll("[^\\d]", ""));
-                }
-                ControlGUI.changeBtnColor(armTextField.getText(), descBox.getText(), btn, descBox, armTextField);
-            }
-        });
-        descBox.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue,
-                                String newValue) {
-                ControlGUI.changeBtnColor(descBox.getText(), armTextField.getText(), btn, descBox, armTextField);
-            }
-        });
-
-        final Text actiontarget = new Text();
-        gridPane.add(actiontarget, 1, 6);
-
-        if(control.getPublicIp().equals("0.0.0.0")) actiontarget.setText("No connection!");
-
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent e) {
-                control.setArmId(Integer.parseInt(armTextField.getText()));
-                control.setDescription(descBox.getText());
-                try {
-                    int status = NetworkUtility.sendPost(control);
-                    if(status == 200) System.exit(0);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                    actiontarget.setText("Cannot reach server");
-                }
-            }
-        });
+        
 
         Scene scene = new Scene(gridPane, 500,275);
 
