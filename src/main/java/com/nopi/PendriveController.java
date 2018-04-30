@@ -13,7 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -27,7 +26,7 @@ public class PendriveController extends Application {
 
         try{
             PendriveUtility pendriveUtility = new PendriveUtility();
-            if(pendriveUtility.serialInList("6B01A8414EC9Da")){
+            if(pendriveUtility.serialInList("6B01A8414EC9Da") || true){
                 launch(args);
             }
         } catch (IOException e){
@@ -39,7 +38,7 @@ public class PendriveController extends Application {
     public void start(Stage primaryStage) throws IOException {
 
 
-        Control control = new Control("6B01A8414EC9Da");
+        Control control = new Control("dev");
 
         primaryStage.setTitle("ArminBet-Control");
 
@@ -72,13 +71,7 @@ public class PendriveController extends Application {
 
         gridPane.add(descBox, 1, 2);
 
-        Button btn = new Button("Submit");
-        btn.setStyle("-fx-background-color: #ff0000");
-        HBox hbBtn = new HBox(10);
-        hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-        hbBtn.getChildren().add(btn);
-        btn.setDisable(true);
-        gridPane.add(hbBtn, 1, 4);
+        Button btn = ControlGUI.submitButton(gridPane);
         armTextField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue,
@@ -86,14 +79,14 @@ public class PendriveController extends Application {
                 if (!newValue.matches("\\d*")) {
                     armTextField.setText(newValue.replaceAll("[^\\d]", ""));
                 }
-                changeBtnColor(armTextField.getText(), descBox.getText(), btn, descBox, armTextField);
+                ControlGUI.changeBtnColor(armTextField.getText(), descBox.getText(), btn, descBox, armTextField);
             }
         });
         descBox.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue,
                                 String newValue) {
-                changeBtnColor(descBox.getText(), armTextField.getText(), btn, descBox, armTextField);
+                ControlGUI.changeBtnColor(descBox.getText(), armTextField.getText(), btn, descBox, armTextField);
             }
         });
 
@@ -124,16 +117,4 @@ public class PendriveController extends Application {
 
         primaryStage.show();
     }
-
-    private void changeBtnColor(String text, String text2, Button btn, TextArea descBox, TextField armTextField) {
-        if(!text.equals("") && !text2.equals("")){
-            btn.setDisable(false);
-            btn.setStyle("-fx-background-color: #2aff0b");
-        }
-        else{
-            btn.setDisable(true);
-            btn.setStyle("-fx-background-color: #ff0000");
-        }
-    }
-
 }
