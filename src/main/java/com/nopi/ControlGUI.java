@@ -1,5 +1,6 @@
 package com.nopi;
 
+import com.sun.tools.javac.comp.Check;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,11 +20,22 @@ public class ControlGUI {
 
     public Scene menu, controlPage, cashPage, errorPage;
     Stage stage;
+    List<CheckBox> systemCheckBoxes;
+    List<CheckBox> paperCheckBoxes;
+    Integer armId;
 
     public ControlGUI(Stage stage){
         this.menu = menuScene();
         this.controlPage = new Scene(controlScene(), 800, 300);
         this.stage = stage;
+    }
+
+    private static List<CheckBox> makeCheckBoxes(String... systemElements){
+        List<CheckBox> checkBoxes = new ArrayList<>();
+        for(String systemElement: systemElements){
+            checkBoxes.add(new CheckBox(systemElement));
+        }
+        return checkBoxes;
     }
 
     public Scene menuScene(){
@@ -57,7 +70,7 @@ public class ControlGUI {
 
     public GridPane controlScene(){
         GridPane gridPane = new GridPane();
-        gridPane.setHgap(10);
+        gridPane.setHgap(50);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(5,5,5,5));
 
@@ -85,16 +98,14 @@ public class ControlGUI {
         system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         VBox vbox1 = new VBox(system);
 
-        CheckBox checkBox1 = new CheckBox("PC");
-        CheckBox checkBox2 = new CheckBox("Monitor");
-        CheckBox checkBox3 = new CheckBox("Ticket printer");
-        CheckBox checkBox4 = new CheckBox("Offerta printer");
-        CheckBox checkBox5 = new CheckBox("Scanner");
-        CheckBox checkBox6 = new CheckBox("Raspberry");
-        CheckBox checkBox7 = new CheckBox("Casa");
-
-        List<CheckBox> checkBoxes = Arrays.asList(checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6, checkBox7);
-        checkBoxes.forEach(checkBox -> checkBox.setVisible(false));
+        this.systemCheckBoxes = makeCheckBoxes("PC",
+                "Monitor",
+                "Ticket printer",
+                "Offerta printer",
+                "Scanner",
+                "Raspberry Pi",
+                "Casa");
+        this.systemCheckBoxes.forEach(checkBox -> checkBox.setVisible(false));
 
         ToggleGroup problemGroup = new ToggleGroup();
         RadioButton okButton = new RadioButton("Everything ok");
@@ -114,6 +125,96 @@ public class ControlGUI {
         fixed.setVisible(false);
         notFixed.setVisible(false);
 
+        toggleFixedOrNotFixedButtons(this.systemCheckBoxes, notOkButton, fixed, notFixed);
+
+        fixedGroupEventHandler(this.systemCheckBoxes, fixed);
+        fixedGroupEventHandler(this.systemCheckBoxes, notFixed);
+
+        this.systemCheckBoxes.forEach(checkBox -> checkBox.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+            if(this.systemCheckBoxes.stream().noneMatch(CheckBox::isSelected)){
+                fixed.setSelected(false);
+                notFixed.setSelected(false);
+            }
+        }));
+
+        vbox1.getChildren().addAll(okButton, notOkButton);
+        vbox1.getChildren().addAll(this.systemCheckBoxes);
+        vbox1.getChildren().addAll(fixed, notFixed);
+
+        gridPane.add(vbox1, 1, 2);
+
+        Label paper = new Label("Paper");
+        paper.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+
+        VBox vbox2 = new VBox(paper);
+
+        this.paperCheckBoxes = makeCheckBoxes("checkbox1",
+                "checkbox2",
+                "checkbox3",
+                "checkbox4",
+                "checkbox5",
+                "checkbox6",
+                "checkbox7");
+        this.paperCheckBoxes.forEach(checkBox -> checkBox.setVisible(false));
+
+        ToggleGroup paperGroup = new ToggleGroup();
+        RadioButton paperOkRadioButton = new RadioButton("All papers OK");
+        paperOkRadioButton.setToggleGroup(paperGroup);
+        paperOkRadioButton.setSelected(true);
+        paperOkRadioButton.setPadding(new Insets(5,0,5,0));
+        RadioButton paperNotOkRadioButton = new RadioButton("papers not OK");
+        paperNotOkRadioButton.setToggleGroup(paperGroup);
+
+        ToggleGroup paperFixedGroup = new ToggleGroup();
+        RadioButton paperFixed = new RadioButton("paper fixed");
+        paperFixed.setToggleGroup(paperFixedGroup);
+        paperFixed.setPadding(new Insets(5,0,5,0));
+        RadioButton paperNotFixed = new RadioButton("not fixed");
+        paperNotFixed.setToggleGroup(paperFixedGroup);
+        paperFixed.setVisible(false);
+        paperNotFixed.setVisible(false);
+
+        toggleFixedOrNotFixedButtons(this.paperCheckBoxes, paperNotOkRadioButton, paperFixed, paperNotFixed);
+
+        fixedGroupEventHandler(this.paperCheckBoxes, paperFixed);
+        fixedGroupEventHandler(this.paperCheckBoxes, paperNotFixed);
+
+        this.paperCheckBoxes.forEach(checkBox -> checkBox.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
+            if(this.paperCheckBoxes.stream().noneMatch(CheckBox::isSelected)){
+                paperFixed.setSelected(false);
+                paperNotFixed.setSelected(false);
+            }
+        }));
+
+        vbox2.getChildren().addAll(paperOkRadioButton, paperNotOkRadioButton);
+        vbox2.getChildren().addAll(this.paperCheckBoxes);
+        vbox2.getChildren().addAll(paperFixed, paperNotFixed);
+
+        gridPane.add(vbox2, 2, 2);
+
+
+        Label casa = new Label("Casa");
+        casa.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+
+        VBox vBox3 = new VBox(casa);
+
+        ToggleGroup casaGroup = new ToggleGroup();
+        RadioButton casaOkButton = new RadioButton("Everything ok");
+        casaOkButton.setToggleGroup(casaGroup);
+        casaOkButton.setSelected(true);
+        casaOkButton.setPadding(new Insets(5,0,5,0));
+        RadioButton casaNotOkButton = new RadioButton("not ok");
+        casaNotOkButton.setToggleGroup(casaGroup);
+
+        vBox3.getChildren().addAll(casaOkButton, casaNotOkButton);
+
+        gridPane.add(vBox3, 3, 2);
+        
+        return gridPane;
+
+    }
+
+    private void toggleFixedOrNotFixedButtons(List<CheckBox> checkBoxes, RadioButton notOkButton, RadioButton fixed, RadioButton notFixed) {
         notOkButton.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
             if (isNowSelected) {
                 checkBoxes.forEach(checkBox -> checkBox.setVisible(true));
@@ -125,25 +226,6 @@ public class ControlGUI {
                 notFixed.setVisible(false);
             }
         });
-
-        fixedGroupEventHandler(checkBoxes, fixed);
-        fixedGroupEventHandler(checkBoxes, notFixed);
-
-        checkBoxes.forEach(checkBox -> checkBox.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
-            if(checkBoxes.stream().noneMatch(CheckBox::isSelected)){
-                fixed.setSelected(false);
-                notFixed.setSelected(false);
-            }
-        }));
-
-        vbox1.getChildren().addAll(okButton, notOkButton);
-        vbox1.getChildren().addAll(checkBoxes);
-        vbox1.getChildren().addAll(fixed, notFixed);
-
-        gridPane.add(vbox1, 1, 2);
-
-        return gridPane;
-
     }
 
     private void fixedGroupEventHandler(List<CheckBox> checkBoxes, RadioButton notFixed) {
