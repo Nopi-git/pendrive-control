@@ -70,6 +70,7 @@ public class ControlGUI {
 
         //Cash
         Button cashButton = new Button("Cash");
+        cashButton.setOnAction(event -> this.stage.setScene(cashControlScene()));
         cashButton.setPrefWidth(100);
 
         //Error
@@ -103,6 +104,35 @@ public class ControlGUI {
         systemNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
         paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
         paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+
+        gridPane.add(submit, 4, 2);
+
+        return new Scene(gridPane, 650, 600);
+    }
+
+    private Scene cashControlScene(){
+        GridPane gridPane = controlPane(controlSystemVBox(), new Label("Control"), true);
+
+
+        this.submit = new Button("Next");
+        submit.setDisable(true);
+
+        systemOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        systemNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        casaOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        casaNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        systemCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
+        paperCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
+        systemFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        systemNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+
+        submit.setOnAction(event -> {
+            this.stage.setScene(cashScene());
+        });
 
         gridPane.add(submit, 4, 2);
 
@@ -157,6 +187,51 @@ public class ControlGUI {
                 button.setDisable(false);
             } else button.setDisable(true);
         }
+    }
+
+    public Scene cashScene(){
+
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(35);
+
+        CheckBox outcome = new CheckBox("Outcome:");
+
+        TextField outcomeValue = new TextField();
+        outcomeValue.setDisable(true);
+        outcome.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(newValue) outcomeValue.setDisable(false);
+            else outcomeValue.setDisable(true);
+        }));
+
+        CheckBox income = new CheckBox("Income:");
+        TextField incomeValue = new TextField();
+        incomeValue.setDisable(true);
+
+        Label label = new Label("Chitanta:");
+        label.setPadding(new Insets(0,0,0,35));
+
+        TextField chitanta = new TextField();
+        chitanta.setDisable(true);
+
+        income.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(newValue){
+                incomeValue.setDisable(false);
+                chitanta.setDisable(false);
+            } else {
+                incomeValue.setDisable(true);
+                chitanta.setDisable(true);
+            }
+        }));
+
+        gridPane.add(outcome, 1, 1);
+        gridPane.add(outcomeValue, 2, 1);
+        gridPane.add(income, 1, 2);
+        gridPane.add(incomeValue, 2, 2);
+        gridPane.add(label, 1, 3);
+        gridPane.add(chitanta, 2, 3);
+
+        return new Scene(gridPane, 500, 300);
+
     }
 
     public GridPane controlPane(VBox firstVbox, Label menu, boolean isControl) {
