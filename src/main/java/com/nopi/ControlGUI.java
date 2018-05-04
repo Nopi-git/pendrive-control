@@ -36,6 +36,8 @@ public class ControlGUI {
     private RadioButton systemNotFixedRadioButton;
     private RadioButton paperFixedRadioButton;
     private RadioButton paperNotFixedRadioButton;
+    Button submit;
+    TextField armValue;
     Integer armId;
 
     public ControlGUI(Stage stage) {
@@ -83,68 +85,67 @@ public class ControlGUI {
 
 
     private Scene controlScene() {
-        GridPane gridPane = controlPane(controlSystemVBox(), new Label("Control"));
+        GridPane gridPane = controlPane(controlSystemVBox(), new Label("Control"), true);
 
 
-        Button button = new Button("send");
-        button.setDisable(true);
+        this.submit = new Button("send");
+        submit.setDisable(true);
 
-        systemOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        systemNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        paperOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        paperNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        casaOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        casaNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        systemCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button)));
-        paperCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button)));
-        systemFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        systemNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
-        paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(button));
+        systemOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        systemNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        casaOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        casaNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        systemCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
+        paperCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
+        systemFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        systemNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
+        paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
 
-        gridPane.add(button, 4, 2);
+        gridPane.add(submit, 4, 2);
 
         return new Scene(gridPane, 650, 600);
     }
 
     private Scene errorScene() {
-        GridPane gridPane = controlPane(errorSystemVbox(), new Label("Error"));
-        Button button = new Button("send");
-        button.setDisable(true);
+        GridPane gridPane = controlPane(errorSystemVbox(), new Label("Error"), false);
+        this.submit = new Button("send");
+        submit.setDisable(true);
 
-        paperOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
-        paperNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
-        casaOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
-        casaNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
-        systemCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button)));
-        paperCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button)));
-        systemFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
-        systemNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
-        paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
-        paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(button));
+        paperOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
+        paperNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
+        casaOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
+        casaNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
+        systemCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
+        paperCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
+        systemFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
+        systemNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
+        paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
+        paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
 
 
-        gridPane.add(button, 4, 2);
+        gridPane.add(submit, 4, 2);
         return new Scene(gridPane, 650, 600);
     }
 
     private void changeErrorButtonToggleDisableProperty(Button button) {
-        if (paperOkRadioButton.isSelected() &&
-                casaOkRadioButton.isSelected() &&
+        if ((casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
                 systemCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
-                (systemFixedRadioButton.isSelected() || systemNotFixedRadioButton.isSelected())) {
-            button.setDisable(false);
-        } else if (paperNotOkRadioButton.isSelected() &&
-                paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
-                (systemFixedRadioButton.isSelected() || systemNotFixedRadioButton.isSelected())) {
-            button.setDisable(false);
+                (systemFixedRadioButton.isSelected() || systemNotFixedRadioButton.isSelected()) && !armValue.getText().equals("")) {
+            if(paperOkRadioButton.isSelected()){
+                button.setDisable(false);
+            } else if(paperNotOkRadioButton.isSelected() && paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) && (paperFixedRadioButton.isSelected() || paperNotFixedRadioButton.isSelected())){
+                button.setDisable(false);
+            } else button.setDisable(true);
         } else button.setDisable(true);
     }
 
     private void changeControlButtonToggleDisableProperty(Button button) {
         if (systemOkRadioButton.isSelected() &&
                 paperOkRadioButton.isSelected() &&
-                (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected())) {
+                (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) && !armValue.getText().equals("")) {
             button.setDisable(false);
         } else {
             if(systemNotOkRadioButton.isSelected() && systemCheckBoxes.stream().anyMatch(CheckBox::isSelected) && (systemFixedRadioButton.isSelected() || systemNotFixedRadioButton.isSelected()) && paperOkRadioButton.isSelected()){
@@ -158,7 +159,7 @@ public class ControlGUI {
         }
     }
 
-    public GridPane controlPane(VBox firstVbox, Label menu) {
+    public GridPane controlPane(VBox firstVbox, Label menu, boolean isControl) {
         GridPane gridPane = new GridPane();
         gridPane.setHgap(50);
         gridPane.setVgap(10);
@@ -168,15 +169,17 @@ public class ControlGUI {
         armId.setAlignment(Pos.CENTER);
         armId.setFont(Font.font("Arial", FontWeight.BOLD, 12));
 
-        TextField armValue = new TextField();
+        this.armValue = new TextField();
         armId.setLabelFor(armValue);
-        armValue.textProperty().addListener((observable, oldValue, newValue) -> {
+        this.armValue.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d{0,4}?")) {
                 armValue.setText(oldValue);
             }
+            if(isControl) changeControlButtonToggleDisableProperty(submit);
+            else changeErrorButtonToggleDisableProperty(submit);
         });
-        armValue.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-        armValue.setMaxWidth(45);
+        this.armValue.setFont(Font.font("Arial", FontWeight.BOLD, 12));
+        this.armValue.setMaxWidth(45);
 
         gridPane.add(armId, 0, 1);
         gridPane.add(armValue, 1, 1);
@@ -218,12 +221,7 @@ public class ControlGUI {
         this.paperNotFixedRadioButton.setVisible(false);
 
         toggleFixedOrNotFixedButtons(this.paperCheckBoxes, paperNotOkRadioButton, this.paperFixedRadioButton, this.paperNotFixedRadioButton);
-
-        fixedGroupEventHandler(this.paperCheckBoxes, this.paperFixedRadioButton);
-        fixedGroupEventHandler(this.paperCheckBoxes, this.paperNotFixedRadioButton);
-
         this.paperErrorCheckBoxes = new ArrayList<>();
-
         this.paperCheckBoxes.forEach(checkBox -> checkBox.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
             this.paperErrorCheckBoxes.forEach(checkBox1 -> vbox2.getChildren().remove(checkBox1));
             this.paperErrorCheckBoxes.clear();
@@ -232,8 +230,15 @@ public class ControlGUI {
                 this.paperNotFixedRadioButton.setSelected(false);
             }
             this.paperCheckBoxes.stream().filter(CheckBox::isSelected).forEachOrdered(checkBox1 -> this.paperErrorCheckBoxes.add(new CheckBox(checkBox1.getText())));
+            if(paperNotFixedRadioButton.isSelected()){
+                this.paperErrorCheckBoxes.forEach(e->e.setVisible(true));
+            } else paperErrorCheckBoxes.forEach(e->e.setVisible(false));
             vbox2.getChildren().addAll(this.paperErrorCheckBoxes);
         }));
+
+        fixedGroupEventHandler(this.paperCheckBoxes, this.paperFixedRadioButton, false, paperErrorCheckBoxes);
+        fixedGroupEventHandler(this.paperCheckBoxes, this.paperNotFixedRadioButton, true, paperErrorCheckBoxes);
+
 
         vbox2.getChildren().addAll(paperOkRadioButton, paperNotOkRadioButton);
         vbox2.getChildren().addAll(this.paperCheckBoxes);
@@ -268,7 +273,9 @@ public class ControlGUI {
     private VBox controlSystemVBox() {
         Label system = new Label("System");
         system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        VBox vbox1 = new VBox(system);
+
+        CheckBox checkBox4 = new CheckBox("Install");
+        VBox vbox1 = new VBox(system, checkBox4);
 
         this.systemCheckBoxes = makeCheckBoxes("PC",
                 "Monitor",
@@ -298,12 +305,12 @@ public class ControlGUI {
 
         toggleFixedOrNotFixedButtons(this.systemCheckBoxes, this.systemNotOkRadioButton, this.systemFixedRadioButton, this.systemNotFixedRadioButton);
 
-        fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton);
-        fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton);
-
         this.systemErrorCheckBoxes = new ArrayList<>();
-
         dynamicSystemCheckBoxes(vbox1);
+
+        fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton, false, systemErrorCheckBoxes);
+        fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton, true, systemErrorCheckBoxes);
+
 
 
         vbox1.getChildren().addAll(this.systemOkRadioButton, this.systemNotOkRadioButton);
@@ -337,13 +344,12 @@ public class ControlGUI {
         this.systemNotFixedRadioButton = new RadioButton("not fixed");
         this.systemNotFixedRadioButton.setToggleGroup(fixedGroup);
 
-
-        fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton);
-        fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton);
-
         this.systemErrorCheckBoxes = new ArrayList<>();
-
         dynamicSystemCheckBoxes(vbox1);
+
+        fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton, false, this.systemErrorCheckBoxes);
+        fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton, true, this.systemErrorCheckBoxes);
+
 
         vbox1.getChildren().addAll(this.systemCheckBoxes);
         vbox1.getChildren().addAll(this.systemFixedRadioButton, this.systemNotFixedRadioButton);
@@ -360,6 +366,9 @@ public class ControlGUI {
                 this.systemNotFixedRadioButton.setSelected(false);
             }
             this.systemCheckBoxes.stream().filter(CheckBox::isSelected).forEachOrdered(checkBox1 -> this.systemErrorCheckBoxes.add(new CheckBox(checkBox1.getText())));
+            if(this.systemNotFixedRadioButton.isSelected()){
+                this.systemErrorCheckBoxes.forEach(e->e.setVisible(true));
+            } else this.systemErrorCheckBoxes.forEach(e->e.setVisible(false));
             vbox1.getChildren().addAll(this.systemErrorCheckBoxes);
         }));
     }
@@ -378,7 +387,7 @@ public class ControlGUI {
         });
     }
     //restrict to select radiobutton when no checkbox selected
-    private void fixedGroupEventHandler(List<CheckBox> checkBoxes, RadioButton notFixed) {
+    private void fixedGroupEventHandler(List<CheckBox> checkBoxes, RadioButton notFixed, boolean visible, List<CheckBox> errorBoxes) {
         notFixed.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
             if (checkBoxes.stream().anyMatch(CheckBox::isSelected)) {
                 if (isNowSelected) {
@@ -386,6 +395,13 @@ public class ControlGUI {
                 }
             } else {
                 notFixed.setSelected(false);
+            }
+            System.out.println(errorBoxes==null);
+            if(errorBoxes!=null){
+                System.out.println(errorBoxes.size());
+                if(visible){
+                    errorBoxes.forEach(e->e.setVisible(visible));
+                } else errorBoxes.forEach(e->e.setVisible(visible));
             }
         });
     }
