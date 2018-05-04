@@ -14,6 +14,7 @@ public class Control {
     private String location;
     private java.sql.Timestamp date;
     private String lastBootUpTime;
+    private String controlType;
 
     public Control(String pendriveSerial) throws IOException {
         this.pendriveSerial = pendriveSerial;
@@ -31,6 +32,14 @@ public class Control {
 
     public void setLastBootUpTime(String lastBootUpTime) {
         this.lastBootUpTime = lastBootUpTime;
+    }
+
+    public String getControlType() {
+        return controlType;
+    }
+
+    public void setControlType(String controlType) {
+        this.controlType = controlType;
     }
 
     public String getLocation() {
@@ -95,5 +104,21 @@ public class Control {
 
     public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "Control{" +
+                "armId=" + armId +
+                ", description='" + description + '\'' +
+                ", motherBoardSerial='" + motherBoardSerial + '\'' +
+                ", publicIp='" + publicIp + '\'' +
+                ", pendriveSerial='" + pendriveSerial + '\'' +
+                ", MacAddress='" + MacAddress + '\'' +
+                ", location='" + location + '\'' +
+                ", date=" + date +
+                ", lastBootUpTime='" + lastBootUpTime + '\'' +
+                ", controlType='" + controlType + '\'' +
+                '}';
     }
 }
