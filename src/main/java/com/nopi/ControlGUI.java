@@ -13,6 +13,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -139,6 +140,22 @@ public class ControlGUI {
 
 
         this.submit = new Button("Next");
+        this.submit.setOnAction((obs) -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("All information correct?");
+            alert.setContentText("Press ok to send the information to the server");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                control.setArmId(Integer.parseInt(armValue.getText()));
+                control.setControlType("Cash");
+                control.setDescription(writeCashDescription());
+                System.out.println(control);
+                this.stage.setScene(cashScene());
+            } else {
+
+            }
+        });
         submit.setDisable(true);
 
         systemOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
@@ -154,9 +171,6 @@ public class ControlGUI {
         paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
         paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
 
-        submit.setOnAction(event -> {
-            this.stage.setScene(cashScene());
-        });
 
         gridPane.add(submit, 6, 2);
 
@@ -195,8 +209,8 @@ public class ControlGUI {
         paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
 
 
-        gridPane.add(submit, 4, 2);
-        return new Scene(gridPane, 650, 600);
+        gridPane.add(submit, 6, 2);
+        return new Scene(gridPane, 500, 600);
     }
 
     private void changeErrorButtonToggleDisableProperty(Button button) {
@@ -264,6 +278,16 @@ public class ControlGUI {
         else button.setDisable(true);
     }
 
+    private void fillUpControlCashAttributes(){
+        if(outcome.isSelected()){
+            control.setOutcome(new BigDecimal(outcomeValue.getText() + "." + outcomeValueDecimal.getText()));
+        }
+        if(income.isSelected()){
+            control.setIncome(new BigDecimal(incomeValue.getText() + "." + incomeValueDecimal.getText()));
+            control.setChitanta(new BigDecimal(chitanta.getText() + "." + chitantaDecimal.getText()));
+        }
+    }
+
     public Scene cashScene() {
 
         GridPane gridPane = new GridPane();
@@ -274,6 +298,22 @@ public class ControlGUI {
         gridPane.add(cash, 0, 0);
 
         Button button = new Button("Submit");
+        button.setOnAction((obs) -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("All information correct?");
+            alert.setContentText("Press ok to send the information to the server\nOutcome: " + outcomeValue.getText() + "." + outcomeValueDecimal.getText() + " Lei\nIncome: " +
+            incomeValue.getText() + "." + incomeValueDecimal.getText() + " Lei\nChitanta: " +
+            chitanta.getText() + "." + chitantaDecimal.getText() + " Lei");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                fillUpControlCashAttributes();
+                System.out.println(control);
+            } else {
+
+            }
+        });
+
         gridPane.add(button, 5, 4);
 
         outcome = new CheckBox("Outcome:");
@@ -314,7 +354,7 @@ public class ControlGUI {
         income = new CheckBox("Income:");
         incomeValue = new TextField();
         incomeValue.textProperty().addListener(((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d{0,7}([\\.]\\d{0,2})?")) {
+            if (!newValue.matches("\\d{1,5}?")) {
                 Platform.runLater(incomeValue::clear);
             }
             toggleCashButtonDisableProperty(button);
@@ -337,7 +377,7 @@ public class ControlGUI {
 
         chitanta = new TextField();
         chitanta.textProperty().addListener(((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d{0,7}([\\.]\\d{0,2})?")) {
+            if (!newValue.matches("\\d{1,5}")) {
                 Platform.runLater(chitanta::clear);
             }
             toggleCashButtonDisableProperty(button);
@@ -656,18 +696,7 @@ public class ControlGUI {
         if (installCheckbox.isSelected()) {
             description[0] += "Install, ";
         }
-        if (systemOkRadioButton.isSelected()) {
-            description[0] += "System components are OK, ";
-        } else {
-            description[0] += "Error with: ";
-            systemCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
-            if (systemFixedRadioButton.isSelected()) {
-                description[0] += "All errors fixed, ";
-            } else {
-                description[0] += "Can't fix: ";
-                systemErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
-            }
-        }
+        writeSystemDescription(description);
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
             description[0] += "Casa is OK, ";
@@ -694,6 +723,33 @@ public class ControlGUI {
             description[0] += "Casa is not OK, ";
         }
         return description[0];
+    }
+
+    private String writeCashDescription() {
+        final String[] description = {""};
+        writeSystemDescription(description);
+        writePaperDescription(description);
+        if (casaOkRadioButton.isSelected()) {
+            description[0] += "Casa is OK, ";
+        } else {
+            description[0] += "Casa is not OK, ";
+        }
+        return description[0];
+    }
+
+    private void writeSystemDescription(String[] description) {
+        if (systemOkRadioButton.isSelected()) {
+            description[0] += "System components are OK, ";
+        } else {
+            description[0] += "Error with: ";
+            systemCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
+            if (systemFixedRadioButton.isSelected()) {
+                description[0] += "All errors fixed, ";
+            } else {
+                description[0] += "Can't fix: ";
+                systemErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
+            }
+        }
     }
 
     private void writePaperDescription(String[] description) {

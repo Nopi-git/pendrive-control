@@ -55,6 +55,11 @@ public class NetworkUtility {
         params.add(new BasicNameValuePair("location", control.getLocation()));
         params.add(new BasicNameValuePair("date", control.getDate().toString()));
         params.add(new BasicNameValuePair("lastBootUpTime", control.getLastBootUpTime()));
+        params.add(new BasicNameValuePair("controlType", control.getControlType()));
+        params.add(new BasicNameValuePair("outcome", control.getOutcome().toString()));
+        params.add(new BasicNameValuePair("income", control.getIncome().toString()));
+        params.add(new BasicNameValuePair("chitanta", control.getChitanta().toString()));
+
 
         httpPost.setEntity(new UrlEncodedFormEntity(params));
         CloseableHttpResponse response = client.execute(httpPost);

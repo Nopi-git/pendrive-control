@@ -1,6 +1,7 @@
 package com.nopi;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Control {
@@ -15,6 +16,9 @@ public class Control {
     private java.sql.Timestamp date;
     private String lastBootUpTime;
     private String controlType;
+    private BigDecimal income;
+    private BigDecimal outcome;
+    private BigDecimal chitanta;
 
     public Control(String pendriveSerial) throws IOException {
         this.pendriveSerial = pendriveSerial;
@@ -24,6 +28,30 @@ public class Control {
         this.location = NetworkUtility.getPcLocation();
         this.date = new Timestamp(System.currentTimeMillis());
         this.lastBootUpTime = PcInformationUtility.getLastBootUpTime();
+    }
+
+    public BigDecimal getIncome() {
+        return income;
+    }
+
+    public void setIncome(BigDecimal income) {
+        this.income = income;
+    }
+
+    public BigDecimal getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(BigDecimal outcome) {
+        this.outcome = outcome;
+    }
+
+    public BigDecimal getChitanta() {
+        return chitanta;
+    }
+
+    public void setChitanta(BigDecimal chitanta) {
+        this.chitanta = chitanta;
     }
 
     public String getLastBootUpTime() {
@@ -119,6 +147,9 @@ public class Control {
                 ", date=" + date +
                 ", lastBootUpTime='" + lastBootUpTime + '\'' +
                 ", controlType='" + controlType + '\'' +
+                ", income=" + income +
+                ", outcome=" + outcome +
+                ", chitanta=" + chitanta +
                 '}';
     }
 }
