@@ -13,7 +13,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,17 +76,17 @@ public class ControlGUI {
         hBox.setSpacing(10);
 
         //Control
-        Button controlButton = new Button("Control");
+        Button controlButton = new Button("CONTROL");
         controlButton.setPrefWidth(100);
         controlButton.setOnAction(e -> this.stage.setScene(controlScene()));
 
         //Cash
-        Button cashButton = new Button("Cash");
+        Button cashButton = new Button("MONETAR");
         cashButton.setOnAction(event -> this.stage.setScene(cashControlScene()));
         cashButton.setPrefWidth(100);
 
         //Error
-        Button errorButton = new Button("Error");
+        Button errorButton = new Button("INTERVENTIE");
         errorButton.setOnAction(e -> this.stage.setScene(errorScene()));
         errorButton.setPrefWidth(100);
 
@@ -99,18 +101,29 @@ public class ControlGUI {
         gridPane.setPadding(new Insets(5, 15, 5, 15));
 
 
-        this.submit = new Button("send");
+        this.submit = new Button("Trimite");
         this.submit.setOnAction((obs) -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("All information correct?");
-            alert.setContentText("Press ok to send the information to the server");
+            alert.setHeaderText("Toate informatiile sunt corecte?");
+            alert.setContentText("Apasa ok pentru a trimte informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
+                String[] description = writeControlDescription();
                 control.setArmId(Integer.parseInt(armValue.getText()));
                 control.setControlType("Control");
-                control.setDescription(writeControlDescription());
+                control.setDescription(description[0]);
+                control.setNewInstall(installCheckbox.isSelected());
+                if(!description[1].equals("")){
+                    control.setErrorDescription(description[1]);
+                }else control.setErrorDescription("");
+                control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
+                try {
+                    NetworkUtility.sendPost(control);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
 
             }
@@ -132,24 +145,29 @@ public class ControlGUI {
 
         gridPane.add(submit, 6, 2);
 
-        return new Scene(gridPane, 500, 600);
+        return new Scene(gridPane, 700, 600);
     }
 
     private Scene cashControlScene() {
-        GridPane gridPane = controlPane(controlSystemVBox(false), new Label("Cash"), true);
+        GridPane gridPane = controlPane(controlSystemVBox(false), new Label("MONETAR"), true);
 
 
-        this.submit = new Button("Next");
+        this.submit = new Button("Inainte");
         this.submit.setOnAction((obs) -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("All information correct?");
-            alert.setContentText("Press ok to send the information to the server");
+            alert.setHeaderText("Toate informatiile sunt corecte?");
+            alert.setContentText("Apasa ok pentru a trimte informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
+                String[] description = writeCashDescription();
                 control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setControlType("Cash");
-                control.setDescription(writeCashDescription());
+                control.setControlType("MONETAR");
+                control.setDescription(description[0]);
+                if(!description[1].equals("")){
+                    control.setErrorDescription(description[1]);
+                }else control.setErrorDescription("");
+                control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
                 this.stage.setScene(cashScene());
             } else {
@@ -174,23 +192,34 @@ public class ControlGUI {
 
         gridPane.add(submit, 6, 2);
 
-        return new Scene(gridPane, 500, 600);
+        return new Scene(gridPane, 700, 600);
     }
 
     private Scene errorScene() {
-        GridPane gridPane = controlPane(errorSystemVbox(), new Label("Error"), false);
-        this.submit = new Button("send");
+        GridPane gridPane = controlPane(errorSystemVbox(), new Label("INTERVENTIE"), false);
+        this.submit = new Button("Trimite");
         this.submit.setOnAction((obs) -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("All information correct?");
-            alert.setContentText("Press ok to send the information to the server");
+            alert.setHeaderText("Toate informatiile sunt corecte?");
+            alert.setContentText("Apasa ok pentru a trimte informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
+                String[] description = writeErrorDescription();
                 control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setControlType("Error");
-                control.setDescription(writeErrorDescription());
+                control.setControlType("INTERVENTIE");
+                control.setDescription(description[0]);
+                control.setNewInstall(installCheckbox.isSelected());
+                if(!description[1].equals("")){
+                    control.setErrorDescription(description[1]);
+                }else control.setErrorDescription("");
+                control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
+                try {
+                    NetworkUtility.sendPost(control);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
 
             }
@@ -210,7 +239,7 @@ public class ControlGUI {
 
 
         gridPane.add(submit, 6, 2);
-        return new Scene(gridPane, 500, 600);
+        return new Scene(gridPane, 750, 600);
     }
 
     private void changeErrorButtonToggleDisableProperty(Button button) {
@@ -279,6 +308,9 @@ public class ControlGUI {
     }
 
     private void fillUpControlCashAttributes(){
+        control.setIncome(new BigDecimal(0.00));
+        control.setOutcome(new BigDecimal(0.00));
+        control.setChitanta(new BigDecimal(0.00));
         if(outcome.isSelected()){
             control.setOutcome(new BigDecimal(outcomeValue.getText() + "." + outcomeValueDecimal.getText()));
         }
@@ -293,22 +325,26 @@ public class ControlGUI {
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(30, 0, 0, 30));
 
-        Label cash = new Label("Cash");
+        Label cash = new Label("Monetar");
         cash.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         gridPane.add(cash, 0, 0);
 
-        Button button = new Button("Submit");
+        Button button = new Button("Trimitere");
+        button.setDisable(true);
         button.setOnAction((obs) -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText("All information correct?");
-            alert.setContentText("Press ok to send the information to the server\nOutcome: " + outcomeValue.getText() + "." + outcomeValueDecimal.getText() + " Lei\nIncome: " +
-            incomeValue.getText() + "." + incomeValueDecimal.getText() + " Lei\nChitanta: " +
-            chitanta.getText() + "." + chitantaDecimal.getText() + " Lei");
+            alert.setHeaderText("Toate informatiile sunt corecte?");
+            alert.setContentText("Apasa ok pentru a trimte informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 fillUpControlCashAttributes();
                 System.out.println(control);
+                try {
+                    NetworkUtility.sendPost(control);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
 
             }
@@ -316,7 +352,7 @@ public class ControlGUI {
 
         gridPane.add(button, 5, 4);
 
-        outcome = new CheckBox("Outcome:");
+        outcome = new CheckBox("Iesiri:");
 
         outcomeValue = new TextField();
         outcomeValue.setMaxWidth(50);
@@ -351,7 +387,8 @@ public class ControlGUI {
             toggleCashButtonDisableProperty(button);
         }));
 
-        income = new CheckBox("Income:");
+
+        income = new CheckBox("Intrari:");
         incomeValue = new TextField();
         incomeValue.textProperty().addListener(((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d{1,5}?")) {
@@ -423,23 +460,34 @@ public class ControlGUI {
         Text lei3 = new Text("Lei");
 
         gridPane.add(outcome, 1, 1);
+        GridPane.setMargin(outcome, new Insets(0,0,10,0));
         gridPane.add(outcomeValue, 2, 1);
+        GridPane.setMargin(outcomeValue, new Insets(0,0,10,0));
         gridPane.add(dot1, 3, 1);
+        GridPane.setMargin(dot1, new Insets(0,0,10,0));
         gridPane.add(outcomeValueDecimal, 4, 1);
+        GridPane.setMargin(outcomeValueDecimal, new Insets(0,0,10,0));
         gridPane.add(lei1, 5, 1);
+        GridPane.setMargin(lei1, new Insets(0,0,10,0));
         gridPane.add(income, 1, 2);
+        GridPane.setMargin(income, new Insets(0,0,3,0));
         gridPane.add(incomeValue, 2, 2);
+        GridPane.setMargin(incomeValue, new Insets(0,0,3,0));
         gridPane.add(dot2, 3, 2);
+        GridPane.setMargin(dot2, new Insets(0,0,3,0));
         gridPane.add(incomeValueDecimal, 4, 2);
+        GridPane.setMargin(incomeValueDecimal, new Insets(0,0,3,0));
         gridPane.add(lei2, 5, 2);
+        GridPane.setMargin(lei2, new Insets(0,0,3,0));
         gridPane.add(label, 1, 3);
         gridPane.add(chitanta, 2, 3);
         gridPane.add(dot3, 3, 3);
         gridPane.add(chitantaDecimal, 4, 3);
         gridPane.add(lei3, 5, 3);
+        gridPane.setStyle("-fx-background-color: #C0C0C0;");
 
 
-        return new Scene(gridPane, 350, 250);
+        return new Scene(gridPane, 450, 350);
 
     }
 
@@ -472,33 +520,33 @@ public class ControlGUI {
 
         gridPane.add(vBox1, 2, 2);
 
-        Label paper = new Label("Paper");
+        Label paper = new Label("PAPER - DOCUMENTE");
         paper.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         VBox vbox2 = new VBox(paper);
         vbox2.setPadding(new Insets(0, 10, 0, 0));
 
-        this.paperCheckBoxes = makeCheckBoxes("checkbox1",
-                "checkbox2",
-                "checkbox3",
-                "checkbox4",
-                "checkbox5",
-                "checkbox6",
-                "checkbox7");
+        this.paperCheckBoxes = makeCheckBoxes("AFIS OBLIGATORIU",
+                "AUTORIZATIA",
+                "CAIET SUGESTII RECLAMATII",
+                "REGULAMENT DE JOC",
+                "ECUSON",
+                "REGISTRE CASA DE MARCAT",
+                "FISA POSTULUI");
         this.paperCheckBoxes.forEach(checkBox -> checkBox.setVisible(false));
 
         ToggleGroup paperGroup = new ToggleGroup();
-        this.paperOkRadioButton = new RadioButton("All papers OK");
+        this.paperOkRadioButton = new RadioButton("Documentele in regula");
         this.paperOkRadioButton.setToggleGroup(paperGroup);
         this.paperOkRadioButton.setPadding(new Insets(5, 0, 5, 0));
-        this.paperNotOkRadioButton = new RadioButton("papers not OK");
+        this.paperNotOkRadioButton = new RadioButton("Documentele nu sunt in regula");
         this.paperNotOkRadioButton.setToggleGroup(paperGroup);
 
         ToggleGroup paperFixedGroup = new ToggleGroup();
-        this.paperFixedRadioButton = new RadioButton("paper fixed");
+        this.paperFixedRadioButton = new RadioButton("Documentele rezolvate");
         this.paperFixedRadioButton.setToggleGroup(paperFixedGroup);
         this.paperFixedRadioButton.setPadding(new Insets(5, 0, 5, 0));
-        this.paperNotFixedRadioButton = new RadioButton("not fixed");
+        this.paperNotFixedRadioButton = new RadioButton("Documentele nu sunt rezolvate");
         this.paperNotFixedRadioButton.setToggleGroup(paperFixedGroup);
         this.paperFixedRadioButton.setVisible(false);
         this.paperNotFixedRadioButton.setVisible(false);
@@ -530,16 +578,16 @@ public class ControlGUI {
         gridPane.add(vbox2, 3, 2);
 
 
-        Label casa = new Label("Casa");
+        Label casa = new Label("CASIERIE");
         casa.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         VBox vBox3 = new VBox(casa);
 
         ToggleGroup casaGroup = new ToggleGroup();
-        this.casaOkRadioButton = new RadioButton("Everything ok");
+        this.casaOkRadioButton = new RadioButton("In regula");
         this.casaOkRadioButton.setToggleGroup(casaGroup);
         this.casaOkRadioButton.setPadding(new Insets(5, 0, 5, 0));
-        this.casaNotOkRadioButton = new RadioButton("not ok");
+        this.casaNotOkRadioButton = new RadioButton("Nu este in regula");
         this.casaNotOkRadioButton.setToggleGroup(casaGroup);
 
         vBox3.getChildren().addAll(this.casaOkRadioButton, this.casaNotOkRadioButton);
@@ -554,38 +602,44 @@ public class ControlGUI {
     }
 
     private VBox controlSystemVBox(boolean isInstallNeeded) {
-        Label system = new Label("System");
+        Label system = new Label("SISITEM");
         system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         VBox vbox1 = new VBox(system);
 
         if (isInstallNeeded) {
-            installCheckbox = new CheckBox("Install");
+            installCheckbox = new CheckBox("Instalare/Schimbat PC");
             vbox1.getChildren().add(installCheckbox);
         }
 
         this.systemCheckBoxes = makeCheckBoxes("PC",
-                "Monitor",
-                "Ticket printer",
-                "Offerta printer",
-                "Scanner",
-                "Raspberry Pi",
-                "Casa");
+                "MONITOR",
+                "IMPRIMANTA TERMICA",
+                "IMPRIMANTA OFERTA",
+                "SCANER",
+                "TASTATURA",
+                "MOUSE",
+                "SWITCH",
+                "RASPBERRY",
+                "CABLU HDMI",
+                "CASA DE MARCAT",
+                "TV",
+                "ROLA");
         this.systemCheckBoxes.forEach(checkBox -> checkBox.setVisible(false));
 
         ToggleGroup problemGroup = new ToggleGroup();
-        this.systemOkRadioButton = new RadioButton("Everything ok");
+        this.systemOkRadioButton = new RadioButton("In regula");
         this.systemOkRadioButton.setToggleGroup(problemGroup);
         this.systemOkRadioButton.setPadding(new Insets(5, 0, 5, 0));
-        this.systemNotOkRadioButton = new RadioButton("not ok");
+        this.systemNotOkRadioButton = new RadioButton("Nu este in regula");
         this.systemNotOkRadioButton.setToggleGroup(problemGroup);
 
 
         ToggleGroup fixedGroup = new ToggleGroup();
-        this.systemFixedRadioButton = new RadioButton("fixed");
+        this.systemFixedRadioButton = new RadioButton("Rezolvat");
         this.systemFixedRadioButton.setToggleGroup(fixedGroup);
         this.systemFixedRadioButton.setPadding(new Insets(5, 0, 5, 0));
-        this.systemNotFixedRadioButton = new RadioButton("not fixed");
+        this.systemNotFixedRadioButton = new RadioButton("Nu s-a rezolvat");
         this.systemNotFixedRadioButton.setToggleGroup(fixedGroup);
         this.systemFixedRadioButton.setVisible(false);
         this.systemNotFixedRadioButton.setVisible(false);
@@ -607,27 +661,34 @@ public class ControlGUI {
     }
 
     private VBox errorSystemVbox() {
-        Label system = new Label("System");
+        Label system = new Label("SISITEM");
         system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        VBox vbox1 = new VBox(system);
+        installCheckbox = new CheckBox("Schimbat PC");
+        VBox vbox1 = new VBox(system, installCheckbox);
 
         this.systemCheckBoxes = makeCheckBoxes("PC",
-                "Monitor",
-                "Ticket printer",
-                "Offerta printer",
-                "Scanner",
-                "Raspberry Pi",
-                "Casa");
+                "MONITOR",
+                "IMPRIMANTA TERMICA",
+                "IMPRIMANTA OFERTA",
+                "SCANER",
+                "TASTATURA",
+                "MOUSE",
+                "SWITCH",
+                "RASPBERRY",
+                "CABLU HDMI",
+                "CASA DE MARCAT",
+                "TV",
+                "ROLA");
 
-        Label error = new Label("Error(s)");
+        Label error = new Label("Defectiuni");
         vbox1.getChildren().add(error);
 
 
         ToggleGroup fixedGroup = new ToggleGroup();
-        this.systemFixedRadioButton = new RadioButton("fixed");
+        this.systemFixedRadioButton = new RadioButton("Rezolvat");
         this.systemFixedRadioButton.setToggleGroup(fixedGroup);
         this.systemFixedRadioButton.setPadding(new Insets(5, 0, 5, 0));
-        this.systemNotFixedRadioButton = new RadioButton("not fixed");
+        this.systemNotFixedRadioButton = new RadioButton("Nu s-a rezolvat");
         this.systemNotFixedRadioButton.setToggleGroup(fixedGroup);
 
         this.systemErrorCheckBoxes = new ArrayList<>();
@@ -691,78 +752,75 @@ public class ControlGUI {
         });
     }
 
-    private String writeControlDescription() {
-        final String[] description = {""};
-        if (installCheckbox.isSelected()) {
-            description[0] += "Install, ";
-        }
+    private String[] writeControlDescription() {
+        final String[] description = {"",""};
         writeSystemDescription(description);
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
-            description[0] += "Casa is OK, ";
+            description[0] += "Casierie in regula, ";
         } else {
-            description[0] += "Casa is not OK, ";
+            description[0] += "Casierie nu este in regula, ";
         }
-        return description[0];
+        return description;
     }
 
-    private String writeErrorDescription() {
-        final String[] description = {""};
-        description[0] += "Error with: ";
+    private String[] writeErrorDescription() {
+        final String[] description = {"", ""};
+        description[0] += "Defectiuni: ";
         systemCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
         if (systemFixedRadioButton.isSelected()) {
-            description[0] += "All errors fixed, ";
+            description[0] += "Defectiuni rezolvat, ";
         } else {
-            description[0] += "Can't fix: ";
-            systemErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
+            description[1] += "Nu s-a rezolvat: ";
+            systemErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[1] += e.getText() + ", ");
         }
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
-            description[0] += "Casa is OK, ";
+            description[0] += "Casierie in regula, ";
         } else {
-            description[0] += "Casa is not OK, ";
+            description[0] += "Casierie nu este in regula, ";
         }
-        return description[0];
+        return description;
     }
 
-    private String writeCashDescription() {
-        final String[] description = {""};
+    private String[] writeCashDescription() {
+        final String[] description = {"", ""};
         writeSystemDescription(description);
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
-            description[0] += "Casa is OK, ";
+            description[0] += "Casierie in regula, ";
         } else {
-            description[0] += "Casa is not OK, ";
+            description[0] += "Casierie nu este in regula, ";
         }
-        return description[0];
+        return description;
     }
 
     private void writeSystemDescription(String[] description) {
         if (systemOkRadioButton.isSelected()) {
-            description[0] += "System components are OK, ";
+            description[0] += "Sisitem in regula, ";
         } else {
-            description[0] += "Error with: ";
+            description[0] += "Defectiuni: ";
             systemCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
             if (systemFixedRadioButton.isSelected()) {
-                description[0] += "All errors fixed, ";
+                description[0] += "Defectiuni rezolvat, ";
             } else {
-                description[0] += "Can't fix: ";
-                systemErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
+                description[1] += "Nu s-a rezolvat: ";
+                systemErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[1] += e.getText() + ", ");
             }
         }
     }
 
     private void writePaperDescription(String[] description) {
         if (paperOkRadioButton.isSelected()) {
-            description[0] += "Papers are OK, ";
+            description[0] += "Documentele in regula, ";
         } else {
-            description[0] += "Missing papers: ";
+            description[0] += "Documente lipsa: ";
             paperCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
             if (paperFixedRadioButton.isSelected()) {
-                description[0] += "Missing papers replaced, ";
+                description[0] += "Documentele rezolvate, ";
             } else {
-                description[0] += "Still missing papers: ";
-                paperErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
+                description[1] += "Documentele nu sunt rezolvate: ";
+                paperErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[1] += e.getText() + ", ");
             }
         }
     }

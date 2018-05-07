@@ -11,7 +11,6 @@ public class Control {
     private String motherBoardSerial;
     private String publicIp;
     private String pendriveSerial;
-    private String MacAddress;
     private String location;
     private java.sql.Timestamp date;
     private String lastBootUpTime;
@@ -19,15 +18,33 @@ public class Control {
     private BigDecimal income;
     private BigDecimal outcome;
     private BigDecimal chitanta;
+    private String errorDescription;
+    private boolean isNewInstall = false;
 
     public Control(String pendriveSerial) throws IOException {
         this.pendriveSerial = pendriveSerial;
         this.publicIp = NetworkUtility.getPublicIp();
         this.motherBoardSerial = PcInformationUtility.getPcModel();
-        this.MacAddress = PcInformationUtility.getPCMacAddress();
         this.location = NetworkUtility.getPcLocation();
-        this.date = new Timestamp(System.currentTimeMillis());
         this.lastBootUpTime = PcInformationUtility.getLastBootUpTime();
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
+    }
+
+    public Control setErrorDescription(String errorDescription) {
+        this.errorDescription = errorDescription;
+        return this;
+    }
+
+    public boolean isNewInstall() {
+        return isNewInstall;
+    }
+
+    public Control setNewInstall(boolean newInstall) {
+        isNewInstall = newInstall;
+        return this;
     }
 
     public BigDecimal getIncome() {
@@ -118,14 +135,6 @@ public class Control {
         this.pendriveSerial = pendriveSerial;
     }
 
-    public String getMacAddress() {
-        return MacAddress;
-    }
-
-    public void setMacAddress(String macAddress) {
-        MacAddress = macAddress;
-    }
-
     public Timestamp getDate() {
         return date;
     }
@@ -142,7 +151,6 @@ public class Control {
                 ", motherBoardSerial='" + motherBoardSerial + '\'' +
                 ", publicIp='" + publicIp + '\'' +
                 ", pendriveSerial='" + pendriveSerial + '\'' +
-                ", MacAddress='" + MacAddress + '\'' +
                 ", location='" + location + '\'' +
                 ", date=" + date +
                 ", lastBootUpTime='" + lastBootUpTime + '\'' +

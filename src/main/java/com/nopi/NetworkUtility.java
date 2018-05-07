@@ -43,22 +43,28 @@ public class NetworkUtility {
     }
 
     public static int sendPost(Control control) throws IOException {
+        String isNewInstall;
+        if(control.isNewInstall()) isNewInstall = "true";
+        else isNewInstall = "false";
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("https://arminbet-pendrive.herokuapp.com/controldata");
+        HttpPost httpPost = new HttpPost("http://localhost:60000/controldata");
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("armId", control.getArmId().toString()));
         params.add(new BasicNameValuePair("description", control.getDescription()));
         params.add(new BasicNameValuePair("publicIp", control.getPublicIp()));
         params.add(new BasicNameValuePair("pcMotherBoardSerialNumber", control.getMotherBoardSerial()));
         params.add(new BasicNameValuePair("pendriveSerial", control.getPendriveSerial()));
-        params.add(new BasicNameValuePair("macAddress", control.getMacAddress()));
         params.add(new BasicNameValuePair("location", control.getLocation()));
         params.add(new BasicNameValuePair("date", control.getDate().toString()));
         params.add(new BasicNameValuePair("lastBootUpTime", control.getLastBootUpTime()));
         params.add(new BasicNameValuePair("controlType", control.getControlType()));
-        params.add(new BasicNameValuePair("outcome", control.getOutcome().toString()));
-        params.add(new BasicNameValuePair("income", control.getIncome().toString()));
-        params.add(new BasicNameValuePair("chitanta", control.getChitanta().toString()));
+        params.add(new BasicNameValuePair("errorDescription", control.getErrorDescription()));
+        params.add(new BasicNameValuePair("isNewInstall", isNewInstall));
+        if(control.getControlType().equals("Cash")){
+            params.add(new BasicNameValuePair("outcome", control.getOutcome().toString()));
+            params.add(new BasicNameValuePair("income", control.getIncome().toString()));
+            params.add(new BasicNameValuePair("chitanta", control.getChitanta().toString()));
+        }
 
 
         httpPost.setEntity(new UrlEncodedFormEntity(params));
