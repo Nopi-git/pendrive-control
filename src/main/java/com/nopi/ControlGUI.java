@@ -1,5 +1,6 @@
 package com.nopi;
 
+import com.sun.tools.javac.comp.Check;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -81,7 +82,7 @@ public class ControlGUI {
         controlButton.setOnAction(e -> this.stage.setScene(controlScene()));
 
         //Cash
-        Button cashButton = new Button("MONETAR");
+        Button cashButton = new Button("CASIERIE");
         cashButton.setOnAction(event -> this.stage.setScene(cashControlScene()));
         cashButton.setPrefWidth(100);
 
@@ -94,6 +95,15 @@ public class ControlGUI {
         hBox.getChildren().addAll(controlButton, cashButton, errorButton);
 
         return hBox;
+    }
+
+    public Scene errorWindow(String errorDesc){
+        GridPane gridPane = new GridPane();
+        Label label = new Label("Something went wrong");
+        Text text = new Text(errorDesc);
+        gridPane.add(label, 0,1);
+        gridPane.add(text, 0, 2);
+        return new Scene(gridPane,500,500);
     }
     
     private Scene controlScene() {
@@ -149,7 +159,7 @@ public class ControlGUI {
     }
 
     private Scene cashControlScene() {
-        GridPane gridPane = controlPane(controlSystemVBox(false), new Label("MONETAR"), true);
+        GridPane gridPane = controlPane(controlSystemVBox(false), new Label("CASIERIE"), true);
 
 
         this.submit = new Button("Inainte");
@@ -245,10 +255,10 @@ public class ControlGUI {
     private void changeErrorButtonToggleDisableProperty(Button button) {
         if ((casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
                 systemCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
-                (systemFixedRadioButton.isSelected() || systemNotFixedRadioButton.isSelected()) && !armValue.getText().equals("")) {
+                (systemFixedRadioButton.isSelected() || (systemNotFixedRadioButton.isSelected() && systemErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))) && !armValue.getText().equals("")) {
             if (paperOkRadioButton.isSelected()) {
                 button.setDisable(false);
-            } else if (paperNotOkRadioButton.isSelected() && paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) && (paperFixedRadioButton.isSelected() || paperNotFixedRadioButton.isSelected())) {
+            } else if (paperNotOkRadioButton.isSelected() && paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) && (paperFixedRadioButton.isSelected() || (paperNotFixedRadioButton.isSelected() && paperErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected)))) {
                 button.setDisable(false);
             } else button.setDisable(true);
         } else button.setDisable(true);
@@ -262,23 +272,23 @@ public class ControlGUI {
         } else {
             if (systemNotOkRadioButton.isSelected() &&
                     systemCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
-                    (systemFixedRadioButton.isSelected() || systemNotFixedRadioButton.isSelected()) &&
+                    (systemFixedRadioButton.isSelected() || (systemNotFixedRadioButton.isSelected() && systemErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))) &&
                     paperOkRadioButton.isSelected() &&
                     (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
                     !armValue.getText().equals("")) {
                 button.setDisable(false);
             } else if (paperNotOkRadioButton.isSelected() &&
                     paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
-                    (paperFixedRadioButton.isSelected() || paperNotFixedRadioButton.isSelected()) &&
+                    (paperFixedRadioButton.isSelected() || (paperNotFixedRadioButton.isSelected() && paperErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))) &&
                     systemOkRadioButton.isSelected() &&
                     (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
                     !armValue.getText().equals("")) {
                 button.setDisable(false);
             } else if ((systemNotOkRadioButton.isSelected() &&
                     systemCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
-                    (systemFixedRadioButton.isSelected() || systemNotFixedRadioButton.isSelected()) &&
+                    (systemFixedRadioButton.isSelected() || (systemNotFixedRadioButton.isSelected() && systemErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))) &&
                     (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
-                    (paperNotOkRadioButton.isSelected() && paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) && (paperFixedRadioButton.isSelected() || paperNotFixedRadioButton.isSelected()))) &&
+                    (paperNotOkRadioButton.isSelected() && paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) && (paperFixedRadioButton.isSelected() || (paperNotFixedRadioButton.isSelected() && paperErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))))) &&
                     !armValue.getText().equals("")) {
                 button.setDisable(false);
             } else button.setDisable(true);
@@ -352,7 +362,7 @@ public class ControlGUI {
 
         gridPane.add(button, 5, 4);
 
-        outcome = new CheckBox("Iesiri:");
+        outcome = new CheckBox("Alimentare:");
 
         outcomeValue = new TextField();
         outcomeValue.setMaxWidth(50);
@@ -388,7 +398,7 @@ public class ControlGUI {
         }));
 
 
-        income = new CheckBox("Intrari:");
+        income = new CheckBox("Retragere:");
         incomeValue = new TextField();
         incomeValue.textProperty().addListener(((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d{1,5}?")) {
@@ -520,7 +530,7 @@ public class ControlGUI {
 
         gridPane.add(vBox1, 2, 2);
 
-        Label paper = new Label("PAPER - DOCUMENTE");
+        Label paper = new Label("DOCUMENTE");
         paper.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         VBox vbox2 = new VBox(paper);
@@ -564,6 +574,10 @@ public class ControlGUI {
             if (paperNotFixedRadioButton.isSelected()) {
                 this.paperErrorCheckBoxes.forEach(e -> e.setVisible(true));
             } else paperErrorCheckBoxes.forEach(e -> e.setVisible(false));
+            if(isControl){
+                this.paperErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
+            }
+            else this.paperErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
             vbox2.getChildren().addAll(this.paperErrorCheckBoxes);
         }));
 
@@ -578,7 +592,7 @@ public class ControlGUI {
         gridPane.add(vbox2, 3, 2);
 
 
-        Label casa = new Label("CASIERIE");
+        Label casa = new Label("MONETAR");
         casa.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         VBox vBox3 = new VBox(casa);
@@ -612,7 +626,8 @@ public class ControlGUI {
             vbox1.getChildren().add(installCheckbox);
         }
 
-        this.systemCheckBoxes = makeCheckBoxes("PC",
+        this.systemCheckBoxes = makeCheckBoxes("INSTRUIRE",
+                "PC",
                 "MONITOR",
                 "IMPRIMANTA TERMICA",
                 "IMPRIMANTA OFERTA",
@@ -647,7 +662,7 @@ public class ControlGUI {
         toggleFixedOrNotFixedButtons(this.systemCheckBoxes, this.systemNotOkRadioButton, this.systemFixedRadioButton, this.systemNotFixedRadioButton);
 
         this.systemErrorCheckBoxes = new ArrayList<>();
-        dynamicSystemCheckBoxes(vbox1);
+        dynamicSystemCheckBoxes(vbox1, true);
 
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton, false, systemErrorCheckBoxes);
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton, true, systemErrorCheckBoxes);
@@ -666,7 +681,8 @@ public class ControlGUI {
         installCheckbox = new CheckBox("Schimbat PC");
         VBox vbox1 = new VBox(system, installCheckbox);
 
-        this.systemCheckBoxes = makeCheckBoxes("PC",
+        this.systemCheckBoxes = makeCheckBoxes("INSTRUIRE",
+                "PC",
                 "MONITOR",
                 "IMPRIMANTA TERMICA",
                 "IMPRIMANTA OFERTA",
@@ -692,7 +708,7 @@ public class ControlGUI {
         this.systemNotFixedRadioButton.setToggleGroup(fixedGroup);
 
         this.systemErrorCheckBoxes = new ArrayList<>();
-        dynamicSystemCheckBoxes(vbox1);
+        dynamicSystemCheckBoxes(vbox1, false);
 
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton, false, this.systemErrorCheckBoxes);
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton, true, this.systemErrorCheckBoxes);
@@ -704,7 +720,7 @@ public class ControlGUI {
         return vbox1;
     }
 
-    private void dynamicSystemCheckBoxes(VBox vbox1) {
+    private void dynamicSystemCheckBoxes(VBox vbox1, boolean isControl) {
         this.systemCheckBoxes.forEach(checkBox -> checkBox.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
             this.systemErrorCheckBoxes.forEach(checkBox1 -> vbox1.getChildren().remove(checkBox1));
             this.systemErrorCheckBoxes.clear();
@@ -716,6 +732,10 @@ public class ControlGUI {
             if (this.systemNotFixedRadioButton.isSelected()) {
                 this.systemErrorCheckBoxes.forEach(e -> e.setVisible(true));
             } else this.systemErrorCheckBoxes.forEach(e -> e.setVisible(false));
+            if(isControl){
+                this.systemErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
+            }
+            else this.systemErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
             vbox1.getChildren().addAll(this.systemErrorCheckBoxes);
         }));
     }
@@ -757,9 +777,9 @@ public class ControlGUI {
         writeSystemDescription(description);
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
-            description[0] += "Casierie in regula, ";
+            description[0] += "Monetar in regula, ";
         } else {
-            description[0] += "Casierie nu este in regula, ";
+            description[0] += "Monetar nu este in regula, ";
         }
         return description;
     }
@@ -776,9 +796,9 @@ public class ControlGUI {
         }
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
-            description[0] += "Casierie in regula, ";
+            description[0] += "Monetar in regula, ";
         } else {
-            description[0] += "Casierie nu este in regula, ";
+            description[0] += "Monetar nu este in regula, ";
         }
         return description;
     }
@@ -788,9 +808,9 @@ public class ControlGUI {
         writeSystemDescription(description);
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
-            description[0] += "Casierie in regula, ";
+            description[0] += "Monetar in regula, ";
         } else {
-            description[0] += "Casierie nu este in regula, ";
+            description[0] += "Monetar nu este in regula, ";
         }
         return description;
     }

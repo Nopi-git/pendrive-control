@@ -21,16 +21,18 @@ public class PendriveController extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
-
-
-        Control control = new Control("dev");
-
+    public void start(Stage primaryStage){
+        Control control;
         primaryStage.setTitle("ArminBet-Control");
 
-        ControlGUI gui = new ControlGUI(primaryStage, control);
-
-        primaryStage.setScene(gui.menu);
+        try{
+            control = new Control("dev");
+            ControlGUI gui = new ControlGUI(primaryStage, control);
+            primaryStage.setScene(gui.menu);
+        }catch (IOException e){
+            ControlGUI gui = new ControlGUI(primaryStage, null);
+            primaryStage.setScene(gui.errorWindow(e.getMessage()));
+        }
         primaryStage.show();
     }
 }
