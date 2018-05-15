@@ -19,7 +19,7 @@ public class Control {
     private BigDecimal outcome;
     private BigDecimal chitanta;
     private String errorDescription;
-    private boolean isNewInstall = false;
+    private String install;
 
     public Control(String pendriveSerial) throws IOException {
         this.pendriveSerial = pendriveSerial;
@@ -38,12 +38,12 @@ public class Control {
         return this;
     }
 
-    public boolean isNewInstall() {
-        return isNewInstall;
+    public String getInstall() {
+        return install;
     }
 
-    public Control setNewInstall(boolean newInstall) {
-        isNewInstall = newInstall;
+    public Control setInstall(String install) {
+        this.install = install;
         return this;
     }
 

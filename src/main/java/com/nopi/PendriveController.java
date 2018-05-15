@@ -26,7 +26,7 @@ public class PendriveController extends Application {
         primaryStage.setTitle("ArminBet-Control-V1.1-ALPHA");
 
         try{
-            control = new Control("4B0188D051C9");
+            control = new Control("dev");
             ControlGUI gui = new ControlGUI(primaryStage, control);
             primaryStage.setScene(gui.menu);
         }catch (IOException e){

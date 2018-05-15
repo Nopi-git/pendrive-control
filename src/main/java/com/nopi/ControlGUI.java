@@ -50,6 +50,8 @@ public class ControlGUI {
     private TextField chitantaDecimal;
     private Button submit;
     private TextField armValue;
+    private CheckBox isInstallCheckbox;
+    private TextField ARMTNumber;
 
     public ControlGUI(Stage stage, Control control) {
         this.menu = menuScene();
@@ -67,7 +69,7 @@ public class ControlGUI {
 
     public Scene menuScene() {
 
-        return new Scene(addMenuButtons(), 320, 80);
+        return new Scene(addMenuButtons(), 450, 80);
     }
 
     private HBox addMenuButtons() {
@@ -91,23 +93,29 @@ public class ControlGUI {
         errorButton.setPrefWidth(100);
 
 
-        hBox.getChildren().addAll(controlButton, cashButton, errorButton);
+        //Install
+        Button installButton = new Button("INSTALARE");
+        installButton.setPrefWidth(100);
+        installButton.setOnAction(e -> this.stage.setScene(installScene()));
+
+
+        hBox.getChildren().addAll(controlButton, cashButton, errorButton, installButton);
 
         return hBox;
     }
 
-    public Scene errorWindow(String errorDesc){
+    public Scene errorWindow(String errorDesc) {
         GridPane gridPane = new GridPane();
         Label label = new Label("Something went wrong");
         Text text = new Text(errorDesc);
-        gridPane.add(label, 0,1);
+        gridPane.add(label, 0, 1);
         gridPane.add(text, 0, 2);
-        return new Scene(gridPane,500,500);
+        return new Scene(gridPane, 500, 500);
     }
-    
+
     private Scene controlScene() {
-        GridPane gridPane = controlPane(controlSystemVBox(true), new Label("Control"), true);
-        gridPane.setPadding(new Insets(5, 15, 5, 15));
+        GridPane gridPane = controlPane(controlSystemVBox(false, true, false), new Label("Control"), true, false);
+        gridPane.setPadding(new Insets(10, 15, 5, 15));
 
 
         this.submit = new Button("Trimite");
@@ -122,15 +130,15 @@ public class ControlGUI {
                 control.setArmId(Integer.parseInt(armValue.getText()));
                 control.setControlType("Control");
                 control.setDescription(description[0]);
-                control.setNewInstall(installCheckbox.isSelected());
-                if(!description[1].equals("")){
+                control.setInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
+                if (!description[1].equals("")) {
                     control.setErrorDescription(description[1]);
-                }else control.setErrorDescription("");
+                } else control.setErrorDescription("");
                 control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
                 try {
                     int statusCode = NetworkUtility.sendPost(control);
-                    if(statusCode==200){
+                    if (statusCode == 200) {
                         System.exit(0);
                     }
                 } catch (IOException e) {
@@ -155,13 +163,16 @@ public class ControlGUI {
         paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
         paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
 
-        gridPane.add(submit, 6, 2);
+        VBox vBox = new VBox(submit);
+        vBox.setPadding(new Insets(10, 0, 0, 0));
+        gridPane.add(vBox, 6, 2);
 
         return new Scene(gridPane, 700, 600);
     }
 
     private Scene cashControlScene() {
-        GridPane gridPane = controlPane(controlSystemVBox(false), new Label("CASIERIE"), true);
+        GridPane gridPane = controlPane(controlSystemVBox(false, true, false), new Label("CASIERIE"), true, false);
+        gridPane.setPadding(new Insets(10, 10, 5, 10));
 
 
         this.submit = new Button("Inainte");
@@ -174,11 +185,12 @@ public class ControlGUI {
             if (result.get() == ButtonType.OK) {
                 String[] description = writeCashDescription();
                 control.setArmId(Integer.parseInt(armValue.getText()));
+                control.setInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
                 control.setControlType("Monetar");
                 control.setDescription(description[0]);
-                if(!description[1].equals("")){
+                if (!description[1].equals("")) {
                     control.setErrorDescription(description[1]);
-                }else control.setErrorDescription("");
+                } else control.setErrorDescription("");
                 control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
                 this.stage.setScene(cashScene());
@@ -203,9 +215,9 @@ public class ControlGUI {
 
 
         VBox vBox = new VBox();
-        vBox.getChildren().add(new Text("Doar daca bifezi tot ,\nvei putea inainta"));
+        vBox.getChildren().add(new Text("DOAR DACA BIFEZI TOT,\nVEI PUTEA INAINTA"));
         vBox.getChildren().add(submit);
-        vBox.setPadding(new Insets(10,0,0,5));
+        vBox.setPadding(new Insets(10, 0, 0, 5));
         //gridPane.add(new Text("Doar daca bifezi tot ,\nvei putea inainta"), 6, 2);
         //gridPane.add(submit, 6, 3);
         gridPane.add(vBox, 6, 2);
@@ -213,7 +225,8 @@ public class ControlGUI {
     }
 
     private Scene errorScene() {
-        GridPane gridPane = controlPane(errorSystemVbox(), new Label("INTERVENTIE"), false);
+        GridPane gridPane = controlPane(errorSystemVbox(), new Label("INTERVENTIE"), false, false);
+        gridPane.setPadding(new Insets(10, 10, 5, 10));
         this.submit = new Button("Trimite");
         this.submit.setOnAction((obs) -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -226,15 +239,15 @@ public class ControlGUI {
                 control.setArmId(Integer.parseInt(armValue.getText()));
                 control.setControlType("Error");
                 control.setDescription(description[0]);
-                control.setNewInstall(installCheckbox.isSelected());
-                if(!description[1].equals("")){
+                control.setInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
+                if (!description[1].equals("")) {
                     control.setErrorDescription(description[1]);
-                }else control.setErrorDescription("");
+                } else control.setErrorDescription("");
                 control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
                 try {
                     int statusCode = NetworkUtility.sendPost(control);
-                    if(statusCode==200){
+                    if (statusCode == 200) {
                         System.exit(0);
                     }
                 } catch (IOException e) {
@@ -257,8 +270,9 @@ public class ControlGUI {
         paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
         paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit));
 
-
-        gridPane.add(submit, 6, 2);
+        VBox vBox = new VBox(submit);
+        vBox.setPadding(new Insets(10, 0, 0, 0));
+        gridPane.add(vBox, 6, 2);
         return new Scene(gridPane, 750, 600);
     }
 
@@ -272,6 +286,51 @@ public class ControlGUI {
                 button.setDisable(false);
             } else button.setDisable(true);
         } else button.setDisable(true);
+    }
+
+    private void changeInstallButtonToggleDisableProperty(Button button) {
+        if (isInstallCheckbox.isSelected() || installCheckbox.isSelected()) {
+            if (systemOkRadioButton.isSelected() &&
+                    paperOkRadioButton.isSelected() &&
+                    (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) && !armValue.getText().equals("")) {
+                button.setDisable(false);
+                if (isInstallCheckbox.isSelected() && ARMTNumber.getText().length() < 4) {
+                    button.setDisable(true);
+                }
+            } else {
+                if (systemNotOkRadioButton.isSelected() &&
+                        systemCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
+                        (systemFixedRadioButton.isSelected() || (systemNotFixedRadioButton.isSelected() && systemErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))) &&
+                        paperOkRadioButton.isSelected() &&
+                        (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
+                        !armValue.getText().equals("")) {
+                    button.setDisable(false);
+                    if (isInstallCheckbox.isSelected() && ARMTNumber.getText().length() < 4) {
+                        button.setDisable(true);
+                    }
+                } else if (paperNotOkRadioButton.isSelected() &&
+                        paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
+                        (paperFixedRadioButton.isSelected() || (paperNotFixedRadioButton.isSelected() && paperErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))) &&
+                        systemOkRadioButton.isSelected() &&
+                        (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
+                        !armValue.getText().equals("")) {
+                    button.setDisable(false);
+                    if (isInstallCheckbox.isSelected() && ARMTNumber.getText().length() < 4) {
+                        button.setDisable(true);
+                    }
+                } else if ((systemNotOkRadioButton.isSelected() &&
+                        systemCheckBoxes.stream().anyMatch(CheckBox::isSelected) &&
+                        (systemFixedRadioButton.isSelected() || (systemNotFixedRadioButton.isSelected() && systemErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))) &&
+                        (casaOkRadioButton.isSelected() || casaNotOkRadioButton.isSelected()) &&
+                        (paperNotOkRadioButton.isSelected() && paperCheckBoxes.stream().anyMatch(CheckBox::isSelected) && (paperFixedRadioButton.isSelected() || (paperNotFixedRadioButton.isSelected() && paperErrorCheckBoxes.stream().anyMatch(CheckBox::isSelected))))) &&
+                        !armValue.getText().equals("")) {
+                    button.setDisable(false);
+                    if (isInstallCheckbox.isSelected() && ARMTNumber.getText().length() < 4) {
+                        button.setDisable(true);
+                    }
+                } else button.setDisable(true);
+            }
+        }else button.setDisable(true);
     }
 
     private void changeControlButtonToggleDisableProperty(Button button) {
@@ -327,14 +386,14 @@ public class ControlGUI {
         else button.setDisable(true);
     }
 
-    private void fillUpControlCashAttributes(){
+    private void fillUpControlCashAttributes() {
         control.setIncome(new BigDecimal(0.00));
         control.setOutcome(new BigDecimal(0.00));
         control.setChitanta(new BigDecimal(0.00));
-        if(outcome.isSelected()){
+        if (outcome.isSelected()) {
             control.setOutcome(new BigDecimal(outcomeValue.getText() + "." + outcomeValueDecimal.getText()));
         }
-        if(income.isSelected()){
+        if (income.isSelected()) {
             control.setIncome(new BigDecimal(incomeValue.getText() + "." + incomeValueDecimal.getText()));
             control.setChitanta(new BigDecimal(chitanta.getText() + "." + chitantaDecimal.getText()));
         }
@@ -362,7 +421,7 @@ public class ControlGUI {
                 System.out.println(control);
                 try {
                     int statusCode = NetworkUtility.sendPost(control);
-                    if(statusCode==200){
+                    if (statusCode == 200) {
                         System.exit(0);
                     }
                 } catch (IOException e) {
@@ -483,25 +542,25 @@ public class ControlGUI {
         Text lei3 = new Text("Lei");
 
         gridPane.add(outcome, 1, 1);
-        GridPane.setMargin(outcome, new Insets(0,0,10,0));
+        GridPane.setMargin(outcome, new Insets(0, 0, 10, 0));
         gridPane.add(outcomeValue, 2, 1);
-        GridPane.setMargin(outcomeValue, new Insets(0,0,10,0));
+        GridPane.setMargin(outcomeValue, new Insets(0, 0, 10, 0));
         gridPane.add(dot1, 3, 1);
-        GridPane.setMargin(dot1, new Insets(0,0,10,0));
+        GridPane.setMargin(dot1, new Insets(0, 0, 10, 0));
         gridPane.add(outcomeValueDecimal, 4, 1);
-        GridPane.setMargin(outcomeValueDecimal, new Insets(0,0,10,0));
+        GridPane.setMargin(outcomeValueDecimal, new Insets(0, 0, 10, 0));
         gridPane.add(lei1, 5, 1);
-        GridPane.setMargin(lei1, new Insets(0,0,10,0));
+        GridPane.setMargin(lei1, new Insets(0, 0, 10, 0));
         gridPane.add(income, 1, 2);
-        GridPane.setMargin(income, new Insets(0,0,3,0));
+        GridPane.setMargin(income, new Insets(0, 0, 3, 0));
         gridPane.add(incomeValue, 2, 2);
-        GridPane.setMargin(incomeValue, new Insets(0,0,3,0));
+        GridPane.setMargin(incomeValue, new Insets(0, 0, 3, 0));
         gridPane.add(dot2, 3, 2);
-        GridPane.setMargin(dot2, new Insets(0,0,3,0));
+        GridPane.setMargin(dot2, new Insets(0, 0, 3, 0));
         gridPane.add(incomeValueDecimal, 4, 2);
-        GridPane.setMargin(incomeValueDecimal, new Insets(0,0,3,0));
+        GridPane.setMargin(incomeValueDecimal, new Insets(0, 0, 3, 0));
         gridPane.add(lei2, 5, 2);
-        GridPane.setMargin(lei2, new Insets(0,0,3,0));
+        GridPane.setMargin(lei2, new Insets(0, 0, 3, 0));
         gridPane.add(label, 1, 3);
         gridPane.add(chitanta, 2, 3);
         gridPane.add(dot3, 3, 3);
@@ -514,7 +573,7 @@ public class ControlGUI {
 
     }
 
-    public GridPane controlPane(VBox firstVbox, Label menu, boolean isControl) {
+    public GridPane controlPane(VBox firstVbox, Label menu, boolean isControl, boolean isInstall) {
         GridPane gridPane = new GridPane();
         firstVbox.setPadding(new Insets(0, 10, 0, 0));
 
@@ -588,10 +647,12 @@ public class ControlGUI {
             if (paperNotFixedRadioButton.isSelected()) {
                 this.paperErrorCheckBoxes.forEach(e -> e.setVisible(true));
             } else paperErrorCheckBoxes.forEach(e -> e.setVisible(false));
-            if(isControl){
+            if (isControl) {
                 this.paperErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
-            }
-            else this.paperErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
+            } else
+                this.paperErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
+            if (isInstall)
+                this.paperErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit)));
             vbox2.getChildren().addAll(this.paperErrorCheckBoxes);
         }));
 
@@ -629,15 +690,42 @@ public class ControlGUI {
 
     }
 
-    private VBox controlSystemVBox(boolean isInstallNeeded) {
+    private VBox controlSystemVBox(boolean isInstallNeeded, boolean isPCReplaceNeeded, boolean isInstall) {
         Label system = new Label("SISTEM");
         system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         VBox vbox1 = new VBox(system);
 
         if (isInstallNeeded) {
-            installCheckbox = new CheckBox("Instalare/Schimbat PC");
+            installCheckbox = new CheckBox("Instalare PC");
             vbox1.getChildren().add(installCheckbox);
+        }
+
+        if (isPCReplaceNeeded) {
+            installCheckbox = new CheckBox("Schimbat PC");
+            vbox1.getChildren().add(installCheckbox);
+        }
+
+        if (isInstall) {
+            isInstallCheckbox = new CheckBox("Instalare Terminal");
+            Text serial = new Text("Serial ARMT:");
+            ARMTNumber = new TextField();
+            ARMTNumber.setDisable(true);
+            ARMTNumber.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!(newValue.length() < 4)) {
+                    if (!newValue.matches("[1-9][0-9][0-9][0-9]")) {
+                        Platform.runLater(ARMTNumber::clear);
+                    }
+                }
+                changeInstallButtonToggleDisableProperty(submit);
+            });
+            isInstallCheckbox.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                if (isInstallCheckbox.isSelected()) {
+                    ARMTNumber.setDisable(false);
+                } else ARMTNumber.setDisable(true);
+                changeInstallButtonToggleDisableProperty(submit);
+            }));
+            vbox1.getChildren().addAll(isInstallCheckbox, serial, ARMTNumber);
         }
 
         this.systemCheckBoxes = makeCheckBoxes("INSTRUIRE",
@@ -654,7 +742,11 @@ public class ControlGUI {
                 "CABLU HDMI",
                 "CASA DE MARCAT",
                 "TV",
-                "ROLA");
+                "ROLA",
+                "LIPSA TELEVIZOARE",
+                "PRELUNGITOR",
+                "SCHIMBAT JOC",
+                "REPARATIE TERMINAL");
         this.systemCheckBoxes.forEach(checkBox -> checkBox.setVisible(false));
 
         ToggleGroup problemGroup = new ToggleGroup();
@@ -677,7 +769,7 @@ public class ControlGUI {
         toggleFixedOrNotFixedButtons(this.systemCheckBoxes, this.systemNotOkRadioButton, this.systemFixedRadioButton, this.systemNotFixedRadioButton);
 
         this.systemErrorCheckBoxes = new ArrayList<>();
-        dynamicSystemCheckBoxes(vbox1, true);
+        dynamicSystemCheckBoxes(vbox1, true, isInstall);
 
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton, false, systemErrorCheckBoxes);
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton, true, systemErrorCheckBoxes);
@@ -710,7 +802,11 @@ public class ControlGUI {
                 "CABLU HDMI",
                 "CASA DE MARCAT",
                 "TV",
-                "ROLA");
+                "ROLA",
+                "LIPSA TELEVIZOARE",
+                "PRELUNGITOR",
+                "SCHIMBAT JOC",
+                "REPARATIE TERMINAL");
 
         Label error = new Label("Defectiuni");
         vbox1.getChildren().add(error);
@@ -724,7 +820,7 @@ public class ControlGUI {
         this.systemNotFixedRadioButton.setToggleGroup(fixedGroup);
 
         this.systemErrorCheckBoxes = new ArrayList<>();
-        dynamicSystemCheckBoxes(vbox1, false);
+        dynamicSystemCheckBoxes(vbox1, false, false);
 
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemFixedRadioButton, false, this.systemErrorCheckBoxes);
         fixedGroupEventHandler(this.systemCheckBoxes, this.systemNotFixedRadioButton, true, this.systemErrorCheckBoxes);
@@ -736,7 +832,7 @@ public class ControlGUI {
         return vbox1;
     }
 
-    private void dynamicSystemCheckBoxes(VBox vbox1, boolean isControl) {
+    private void dynamicSystemCheckBoxes(VBox vbox1, boolean isControl, boolean isInstall) {
         this.systemCheckBoxes.forEach(checkBox -> checkBox.selectedProperty().addListener((obs, wasPreviouslySelected, isNowSelected) -> {
             this.systemErrorCheckBoxes.forEach(checkBox1 -> vbox1.getChildren().remove(checkBox1));
             this.systemErrorCheckBoxes.clear();
@@ -748,10 +844,12 @@ public class ControlGUI {
             if (this.systemNotFixedRadioButton.isSelected()) {
                 this.systemErrorCheckBoxes.forEach(e -> e.setVisible(true));
             } else this.systemErrorCheckBoxes.forEach(e -> e.setVisible(false));
-            if(isControl){
+            if (isControl) {
                 this.systemErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit)));
-            }
-            else this.systemErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
+            } else
+                this.systemErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeErrorButtonToggleDisableProperty(submit)));
+            if (isInstall)
+                this.systemErrorCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit)));
             vbox1.getChildren().addAll(this.systemErrorCheckBoxes);
         }));
     }
@@ -789,7 +887,7 @@ public class ControlGUI {
     }
 
     private String[] writeControlDescription() {
-        final String[] description = {"",""};
+        final String[] description = {"", ""};
         writeSystemDescription(description);
         writePaperDescription(description);
         if (casaOkRadioButton.isSelected()) {
@@ -859,6 +957,72 @@ public class ControlGUI {
                 paperErrorCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[1] += e.getText() + ", ");
             }
         }
+    }
+
+    public Scene installScene() {
+        GridPane gridPane = controlPane(controlSystemVBox(true, false, true), new Label("Instalare"), true, true);
+        gridPane.setPadding(new Insets(5, 15, 5, 15));
+
+        this.submit = new Button("Trimite");
+        this.submit.setOnAction((obs) -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("Toate informatiile sunt corecte?");
+            alert.setContentText("Apasa ok pentru a trimte informatia la server");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                String[] description = writeControlDescription();
+                control.setArmId(Integer.parseInt(armValue.getText()));
+                control.setControlType("Instalare");
+                control.setDescription(description[0]);
+                String install = "";
+                if (installCheckbox.isSelected()) {
+                    install += installCheckbox.getText();
+                }
+                if (isInstallCheckbox.isSelected()) {
+                    install += " Instalare Terminal: ARMT" + ARMTNumber.getText();
+                }
+                control.setInstall(install);
+                if (!description[1].equals("")) {
+                    control.setErrorDescription(description[1]);
+                } else control.setErrorDescription("");
+                control.setDate(new Timestamp(System.currentTimeMillis()));
+                System.out.println(control);
+                try {
+                    int statusCode = NetworkUtility.sendPost(control);
+                    if (statusCode == 200) {
+                        System.exit(0);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+
+            }
+        });
+        submit.setDisable(true);
+
+        systemOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        systemNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        paperOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        paperNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        casaOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        casaNotOkRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        systemCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit)));
+        paperCheckBoxes.forEach(e -> e.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit)));
+        systemFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        systemNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        paperNotFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        isInstallCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+        installCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> changeInstallButtonToggleDisableProperty(submit));
+
+        VBox vBox = new VBox(submit);
+        vBox.setPadding(new Insets(10, 0, 0, 0));
+        gridPane.add(vBox, 6, 2);
+
+
+        return new Scene(gridPane, 700, 600);
     }
 
 }
