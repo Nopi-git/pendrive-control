@@ -12,7 +12,7 @@ public class PendriveController extends Application {
 
         try {
             PendriveUtility pendriveUtility = new PendriveUtility();
-            if (pendriveUtility.serialInList("6B01A8414EC9Da") || true) {
+            if (pendriveUtility.serialInList("4B0188D051C9")||true) {
                 launch(args);
             }
         } catch (IOException e) {
@@ -23,10 +23,10 @@ public class PendriveController extends Application {
     @Override
     public void start(Stage primaryStage){
         Control control;
-        primaryStage.setTitle("ArminBet-Control");
+        primaryStage.setTitle("ArminBet-Control-V1.1-ALPHA");
 
         try{
-            control = new Control("dev");
+            control = new Control("4B0188D051C9");
             ControlGUI gui = new ControlGUI(primaryStage, control);
             primaryStage.setScene(gui.menu);
         }catch (IOException e){

@@ -47,7 +47,7 @@ public class NetworkUtility {
         if(control.isNewInstall()) isNewInstall = "true";
         else isNewInstall = "false";
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://localhost:60000/controldata");
+        HttpPost httpPost = new HttpPost("http://arminbet-pendrive.herokuapp.com/controldata");
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("armId", control.getArmId().toString()));
         params.add(new BasicNameValuePair("description", control.getDescription()));
@@ -60,7 +60,7 @@ public class NetworkUtility {
         params.add(new BasicNameValuePair("controlType", control.getControlType()));
         params.add(new BasicNameValuePair("errorDescription", control.getErrorDescription()));
         params.add(new BasicNameValuePair("isNewInstall", isNewInstall));
-        if(control.getControlType().equals("Cash")){
+        if(control.getControlType().equals("Monetar")){
             params.add(new BasicNameValuePair("outcome", control.getOutcome().toString()));
             params.add(new BasicNameValuePair("income", control.getIncome().toString()));
             params.add(new BasicNameValuePair("chitanta", control.getChitanta().toString()));

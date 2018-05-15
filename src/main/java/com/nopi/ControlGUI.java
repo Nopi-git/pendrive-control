@@ -1,6 +1,5 @@
 package com.nopi;
 
-import com.sun.tools.javac.comp.Check;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -130,7 +129,10 @@ public class ControlGUI {
                 control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
                 try {
-                    NetworkUtility.sendPost(control);
+                    int statusCode = NetworkUtility.sendPost(control);
+                    if(statusCode==200){
+                        System.exit(0);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -172,7 +174,7 @@ public class ControlGUI {
             if (result.get() == ButtonType.OK) {
                 String[] description = writeCashDescription();
                 control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setControlType("MONETAR");
+                control.setControlType("Monetar");
                 control.setDescription(description[0]);
                 if(!description[1].equals("")){
                     control.setErrorDescription(description[1]);
@@ -217,7 +219,7 @@ public class ControlGUI {
             if (result.get() == ButtonType.OK) {
                 String[] description = writeErrorDescription();
                 control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setControlType("INTERVENTIE");
+                control.setControlType("Error");
                 control.setDescription(description[0]);
                 control.setNewInstall(installCheckbox.isSelected());
                 if(!description[1].equals("")){
@@ -226,7 +228,10 @@ public class ControlGUI {
                 control.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(control);
                 try {
-                    NetworkUtility.sendPost(control);
+                    int statusCode = NetworkUtility.sendPost(control);
+                    if(statusCode==200){
+                        System.exit(0);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -351,7 +356,10 @@ public class ControlGUI {
                 fillUpControlCashAttributes();
                 System.out.println(control);
                 try {
-                    NetworkUtility.sendPost(control);
+                    int statusCode = NetworkUtility.sendPost(control);
+                    if(statusCode==200){
+                        System.exit(0);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -542,7 +550,8 @@ public class ControlGUI {
                 "REGULAMENT DE JOC",
                 "ECUSON",
                 "REGISTRE CASA DE MARCAT",
-                "FISA POSTULUI");
+                "FISA POSTULUI",
+                "RIDICAT ACTE LUNARE");
         this.paperCheckBoxes.forEach(checkBox -> checkBox.setVisible(false));
 
         ToggleGroup paperGroup = new ToggleGroup();
@@ -616,7 +625,7 @@ public class ControlGUI {
     }
 
     private VBox controlSystemVBox(boolean isInstallNeeded) {
-        Label system = new Label("SISITEM");
+        Label system = new Label("SISTEM");
         system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
         VBox vbox1 = new VBox(system);
@@ -634,6 +643,7 @@ public class ControlGUI {
                 "SCANER",
                 "TASTATURA",
                 "MOUSE",
+                "CABLURI PERIFERICE",
                 "SWITCH",
                 "RASPBERRY",
                 "CABLU HDMI",
@@ -676,7 +686,7 @@ public class ControlGUI {
     }
 
     private VBox errorSystemVbox() {
-        Label system = new Label("SISITEM");
+        Label system = new Label("SISTEM");
         system.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         installCheckbox = new CheckBox("Schimbat PC");
         VBox vbox1 = new VBox(system, installCheckbox);
@@ -689,6 +699,7 @@ public class ControlGUI {
                 "SCANER",
                 "TASTATURA",
                 "MOUSE",
+                "CABLURI PERIFERICE",
                 "SWITCH",
                 "RASPBERRY",
                 "CABLU HDMI",
@@ -817,7 +828,7 @@ public class ControlGUI {
 
     private void writeSystemDescription(String[] description) {
         if (systemOkRadioButton.isSelected()) {
-            description[0] += "Sisitem in regula, ";
+            description[0] += "Sistem in regula, ";
         } else {
             description[0] += "Defectiuni: ";
             systemCheckBoxes.stream().filter(CheckBox::isSelected).forEach(e -> description[0] += e.getText() + ", ");
