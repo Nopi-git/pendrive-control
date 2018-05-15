@@ -202,8 +202,13 @@ public class ControlGUI {
         paperFixedRadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> changeControlButtonToggleDisableProperty(submit));
 
 
-        gridPane.add(submit, 6, 2);
-
+        VBox vBox = new VBox();
+        vBox.getChildren().add(new Text("Doar daca bifezi tot ,\nvei putea inainta"));
+        vBox.getChildren().add(submit);
+        vBox.setPadding(new Insets(10,0,0,5));
+        //gridPane.add(new Text("Doar daca bifezi tot ,\nvei putea inainta"), 6, 2);
+        //gridPane.add(submit, 6, 3);
+        gridPane.add(vBox, 6, 2);
         return new Scene(gridPane, 700, 600);
     }
 
