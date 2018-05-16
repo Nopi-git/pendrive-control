@@ -9,7 +9,7 @@ import java.util.List;
 public class PcInformationUtility {
 
 
-    public static String getPcModel() throws IOException {
+    public static String getPcModel() throws IOException, WmicException {
         String line;
         List<String> model = new ArrayList<>();
         Process process = Runtime.getRuntime().exec("wmic baseboard get serialnumber");
@@ -19,6 +19,7 @@ public class PcInformationUtility {
             model.add(line.replaceAll("\\s+", ""));
         }
         input.close();
+        if(model.size()<3) throw new WmicException("XML error");
         return model.get(2);
     }
 

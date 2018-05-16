@@ -21,7 +21,7 @@ public class Control {
     private String errorDescription;
     private String install;
 
-    public Control(String pendriveSerial) throws IOException {
+    public Control(String pendriveSerial) throws IOException, WmicException {
         this.pendriveSerial = pendriveSerial;
         this.publicIp = NetworkUtility.getPublicIp();
         this.motherBoardSerial = PcInformationUtility.getPcModel();

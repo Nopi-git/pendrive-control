@@ -142,7 +142,7 @@ public class ControlGUI {
                         System.exit(0);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    stage.setScene(this.errorWindow("Can't reach the Server\nTry again"));
                 }
             } else {
 
@@ -251,7 +251,7 @@ public class ControlGUI {
                         System.exit(0);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    stage.setScene(this.errorWindow("Can't reach the Server\nTry again"));
                 }
             } else {
 
@@ -425,7 +425,7 @@ public class ControlGUI {
                         System.exit(0);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    stage.setScene(this.errorWindow("Can't reach the Server\nTry again"));
                 }
             } else {
 
@@ -708,9 +708,10 @@ public class ControlGUI {
 
         if (isInstall) {
             isInstallCheckbox = new CheckBox("Instalare Terminal");
-            Text serial = new Text("Serial ARMT:");
+            Label serial = new Label("Serial ARMT:");
             ARMTNumber = new TextField();
             ARMTNumber.setDisable(true);
+            ARMTNumber.setMaxWidth(50);
             ARMTNumber.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (!(newValue.length() < 4)) {
                     if (!newValue.matches("[1-9][0-9][0-9][0-9]")) {
@@ -725,7 +726,9 @@ public class ControlGUI {
                 } else ARMTNumber.setDisable(true);
                 changeInstallButtonToggleDisableProperty(submit);
             }));
-            vbox1.getChildren().addAll(isInstallCheckbox, serial, ARMTNumber);
+            HBox hb = new HBox();
+            hb.getChildren().addAll(serial, ARMTNumber);
+            vbox1.getChildren().addAll(isInstallCheckbox, hb);
         }
 
         this.systemCheckBoxes = makeCheckBoxes("INSTRUIRE",
@@ -994,7 +997,7 @@ public class ControlGUI {
                         System.exit(0);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    stage.setScene(this.errorWindow("Can't reach the Server\nTry again"));
                 }
             } else {
 
