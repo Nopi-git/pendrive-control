@@ -45,7 +45,7 @@ public class NetworkUtility {
     public static int sendPost(Control control) throws IOException {
 
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://localhost:60000/controldata");
+        HttpPost httpPost = new HttpPost("http://arminbet-pendrive.herokuapp.com/controldata");
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("armId", control.getArmId().toString()));
         params.add(new BasicNameValuePair("description", control.getDescription()));

@@ -20,8 +20,8 @@ public class PendriveController extends Application {
 
         try {
             PendriveUtility pendriveUtility = new PendriveUtility();
-            if (pendriveUtility.serialInList("FB416CD10349")) {
-                control = new Control("FB416CD10349");
+            if (pendriveUtility.serialInList("AA00000000000489")) {
+                control = new Control("AA00000000000489");
                 ControlGUI gui = new ControlGUI(primaryStage, control);
                 primaryStage.setScene(gui.menu);
             }
