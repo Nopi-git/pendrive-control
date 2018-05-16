@@ -9,6 +9,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -59,11 +60,11 @@ public class NetworkUtility {
         params.add(new BasicNameValuePair("controlType", controlData.getControlType()));
         params.add(new BasicNameValuePair("errorDescription", controlData.getErrorDescription()));
         params.add(new BasicNameValuePair("isNewInstall", controlData.getNewInstall()));
-        if(controlData.getControlType().equals("Monetar")){
+        /*if(controlData.getControlType().equals("Monetar")){
             params.add(new BasicNameValuePair("outcome", controlData.getOutcome().toString()));
             params.add(new BasicNameValuePair("income", controlData.getIncome().toString()));
             params.add(new BasicNameValuePair("chitanta", controlData.getChitanta().toString()));
-        }
+        }*/
 
 
         httpPost.setEntity(new UrlEncodedFormEntity(params));
@@ -77,6 +78,16 @@ public class NetworkUtility {
         HttpPost httpPost = new HttpPost("http://localhost:60000/controlData");
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(controlData);
+        System.out.println(json);
+        StringEntity stringEntity = new StringEntity(json, "UTF-8");
+        httpPost.setEntity(stringEntity);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
+
+        CloseableHttpResponse response = client.execute(httpPost);
+        client.close();
+        System.out.println(response.getStatusLine().getStatusCode());
+        return response.getStatusLine().getStatusCode();
     }
 
     static String readAll(Reader rd) throws IOException{

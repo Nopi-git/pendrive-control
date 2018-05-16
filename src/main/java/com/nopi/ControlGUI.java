@@ -137,7 +137,8 @@ public class ControlGUI {
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(controlData);
                 try {
-                    int statusCode = NetworkUtility.sendPost(controlData);
+
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -246,7 +247,7 @@ public class ControlGUI {
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(controlData);
                 try {
-                    int statusCode = NetworkUtility.sendPost(controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -387,16 +388,18 @@ public class ControlGUI {
     }
 
     private void fillUpControlCashAttributes() {
-        controlData.setIncome(new BigDecimal(0.00));
-        controlData.setOutcome(new BigDecimal(0.00));
-        controlData.setChitanta(new BigDecimal(0.00));
+        ControlFinancialData controlFinancialData = new ControlFinancialData();
+        controlFinancialData.setIncome(new BigDecimal(0.00));
+        controlFinancialData.setOutcome(new BigDecimal(0.00));
+        controlFinancialData.setChitanta(new BigDecimal(0.00));
         if (outcome.isSelected()) {
-            controlData.setOutcome(new BigDecimal(outcomeValue.getText() + "." + outcomeValueDecimal.getText()));
+            controlFinancialData.setOutcome(new BigDecimal(outcomeValue.getText() + "." + outcomeValueDecimal.getText()));
         }
         if (income.isSelected()) {
-            controlData.setIncome(new BigDecimal(incomeValue.getText() + "." + incomeValueDecimal.getText()));
-            controlData.setChitanta(new BigDecimal(chitanta.getText() + "." + chitantaDecimal.getText()));
+            controlFinancialData.setIncome(new BigDecimal(incomeValue.getText() + "." + incomeValueDecimal.getText()));
+            controlFinancialData.setChitanta(new BigDecimal(chitanta.getText() + "." + chitantaDecimal.getText()));
         }
+        controlData.setControlFinancialData(controlFinancialData);
     }
 
     public Scene cashScene() {
@@ -420,7 +423,7 @@ public class ControlGUI {
                 fillUpControlCashAttributes();
                 System.out.println(controlData);
                 try {
-                    int statusCode = NetworkUtility.sendPost(controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -992,7 +995,7 @@ public class ControlGUI {
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 System.out.println(controlData);
                 try {
-                    int statusCode = NetworkUtility.sendPost(controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }

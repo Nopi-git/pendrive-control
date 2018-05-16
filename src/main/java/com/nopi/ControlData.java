@@ -15,9 +15,6 @@ public class ControlData {
     private java.sql.Timestamp date;
     private String lastBootUpTime;
     private String controlType;
-    private BigDecimal income;
-    private BigDecimal outcome;
-    private BigDecimal chitanta;
     private String errorDescription;
     private String newInstall;
 
@@ -56,30 +53,6 @@ public class ControlData {
     public ControlData setNewInstall(String newInstall) {
         this.newInstall = newInstall;
         return this;
-    }
-
-    public BigDecimal getIncome() {
-        return income;
-    }
-
-    public void setIncome(BigDecimal income) {
-        this.income = income;
-    }
-
-    public BigDecimal getOutcome() {
-        return outcome;
-    }
-
-    public void setOutcome(BigDecimal outcome) {
-        this.outcome = outcome;
-    }
-
-    public BigDecimal getChitanta() {
-        return chitanta;
-    }
-
-    public void setChitanta(BigDecimal chitanta) {
-        this.chitanta = chitanta;
     }
 
     public String getLastBootUpTime() {
@@ -166,9 +139,9 @@ public class ControlData {
                 ", date=" + date +
                 ", lastBootUpTime='" + lastBootUpTime + '\'' +
                 ", controlType='" + controlType + '\'' +
-                ", income=" + income +
-                ", outcome=" + outcome +
-                ", chitanta=" + chitanta +
+                ", errorDescription='" + errorDescription + '\'' +
+                ", newInstall='" + newInstall + '\'' +
+                ", controlFinancialData=" + controlFinancialData +
                 '}';
     }
 }
