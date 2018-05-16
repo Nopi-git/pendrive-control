@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class Control {
+public class ControlData {
     private Integer armId;
     private String description;
 
@@ -19,9 +19,20 @@ public class Control {
     private BigDecimal outcome;
     private BigDecimal chitanta;
     private String errorDescription;
-    private String install;
+    private String newInstall;
 
-    public Control(String pendriveSerial) throws IOException, WmicException {
+    private ControlFinancialData controlFinancialData;
+
+    public ControlFinancialData getControlFinancialData() {
+        return controlFinancialData;
+    }
+
+    public ControlData setControlFinancialData(ControlFinancialData controlFinancialData) {
+        this.controlFinancialData = controlFinancialData;
+        return this;
+    }
+
+    public ControlData(String pendriveSerial) throws IOException, WmicException {
         this.pendriveSerial = pendriveSerial;
         this.publicIp = NetworkUtility.getPublicIp();
         this.motherBoardSerial = PcInformationUtility.getPcModel();
@@ -33,17 +44,17 @@ public class Control {
         return errorDescription;
     }
 
-    public Control setErrorDescription(String errorDescription) {
+    public ControlData setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
         return this;
     }
 
-    public String getInstall() {
-        return install;
+    public String getNewInstall() {
+        return newInstall;
     }
 
-    public Control setInstall(String install) {
-        this.install = install;
+    public ControlData setNewInstall(String newInstall) {
+        this.newInstall = newInstall;
         return this;
     }
 
@@ -145,7 +156,7 @@ public class Control {
 
     @Override
     public String toString() {
-        return "Control{" +
+        return "ControlData{" +
                 "armId=" + armId +
                 ", description='" + description + '\'' +
                 ", motherBoardSerial='" + motherBoardSerial + '\'' +

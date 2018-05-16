@@ -1,5 +1,6 @@
 package com.nopi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -42,26 +43,26 @@ public class NetworkUtility {
         return ip;
     }
 
-    public static int sendPost(Control control) throws IOException {
+    public static int sendPost(ControlData controlData) throws IOException {
 
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("http://localhost:60000/controldata");
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("armId", control.getArmId().toString()));
-        params.add(new BasicNameValuePair("description", control.getDescription()));
-        params.add(new BasicNameValuePair("publicIp", control.getPublicIp()));
-        params.add(new BasicNameValuePair("pcMotherBoardSerialNumber", control.getMotherBoardSerial()));
-        params.add(new BasicNameValuePair("pendriveSerial", control.getPendriveSerial()));
-        params.add(new BasicNameValuePair("location", control.getLocation()));
-        params.add(new BasicNameValuePair("date", control.getDate().toString()));
-        params.add(new BasicNameValuePair("lastBootUpTime", control.getLastBootUpTime()));
-        params.add(new BasicNameValuePair("controlType", control.getControlType()));
-        params.add(new BasicNameValuePair("errorDescription", control.getErrorDescription()));
-        params.add(new BasicNameValuePair("isNewInstall", control.getInstall()));
-        if(control.getControlType().equals("Monetar")){
-            params.add(new BasicNameValuePair("outcome", control.getOutcome().toString()));
-            params.add(new BasicNameValuePair("income", control.getIncome().toString()));
-            params.add(new BasicNameValuePair("chitanta", control.getChitanta().toString()));
+        params.add(new BasicNameValuePair("armId", controlData.getArmId().toString()));
+        params.add(new BasicNameValuePair("description", controlData.getDescription()));
+        params.add(new BasicNameValuePair("publicIp", controlData.getPublicIp()));
+        params.add(new BasicNameValuePair("pcMotherBoardSerialNumber", controlData.getMotherBoardSerial()));
+        params.add(new BasicNameValuePair("pendriveSerial", controlData.getPendriveSerial()));
+        params.add(new BasicNameValuePair("location", controlData.getLocation()));
+        params.add(new BasicNameValuePair("date", controlData.getDate().toString()));
+        params.add(new BasicNameValuePair("lastBootUpTime", controlData.getLastBootUpTime()));
+        params.add(new BasicNameValuePair("controlType", controlData.getControlType()));
+        params.add(new BasicNameValuePair("errorDescription", controlData.getErrorDescription()));
+        params.add(new BasicNameValuePair("isNewInstall", controlData.getNewInstall()));
+        if(controlData.getControlType().equals("Monetar")){
+            params.add(new BasicNameValuePair("outcome", controlData.getOutcome().toString()));
+            params.add(new BasicNameValuePair("income", controlData.getIncome().toString()));
+            params.add(new BasicNameValuePair("chitanta", controlData.getChitanta().toString()));
         }
 
 
@@ -69,6 +70,13 @@ public class NetworkUtility {
         CloseableHttpResponse response = client.execute(httpPost);
         client.close();
         return response.getStatusLine().getStatusCode();
+    }
+
+    public static int sendPostWithJSON(ControlData controlData) throws IOException{
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost("http://localhost:60000/controlData");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(controlData);
     }
 
     static String readAll(Reader rd) throws IOException{

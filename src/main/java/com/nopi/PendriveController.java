@@ -2,7 +2,6 @@ package com.nopi;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.apache.http.conn.HttpHostConnectException;
 
 import java.io.IOException;
 
@@ -15,14 +14,14 @@ public class PendriveController extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Control control;
-        primaryStage.setTitle("ArminBet-Control-V1.1-ALPHA");
+        ControlData controlData;
+        primaryStage.setTitle("ArminBet-ControlData-V1.1-ALPHA");
 
         try {
             PendriveUtility pendriveUtility = new PendriveUtility();
             if (pendriveUtility.serialInList("FB416CD10349")) {
-                control = new Control("FB416CD10349");
-                ControlGUI gui = new ControlGUI(primaryStage, control);
+                controlData = new ControlData("FB416CD10349");
+                ControlGUI gui = new ControlGUI(primaryStage, controlData);
                 primaryStage.setScene(gui.menu);
             }
         }catch (WmicException e){
