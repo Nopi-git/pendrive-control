@@ -2,7 +2,6 @@ package com.nopi;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.apache.http.conn.HttpHostConnectException;
 
 import java.io.IOException;
 
@@ -15,26 +14,27 @@ public class PendriveController extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Control control;
-        primaryStage.setTitle("ArminBet-Control-V1.1-ALPHA");
+        ControlData controlData;
+        primaryStage.setTitle("ArminBet-ControlData-V1.2-ALPHA");
+        String pendriveSerial = "";
 
         try {
             PendriveUtility pendriveUtility = new PendriveUtility();
-            if (pendriveUtility.serialInList("AA00000000000489")) {
-                control = new Control("AA00000000000489");
-                ControlGUI gui = new ControlGUI(primaryStage, control);
-                primaryStage.setScene(gui.menu);
-            }
-        }catch (WmicException e){
-            ControlGUI gui = new ControlGUI(primaryStage, null);
+            pendriveSerial = pendriveUtility.getValidPendriveSerial();
+            controlData = new ControlData();
+            ControlGUI gui = new ControlGUI(pendriveSerial, primaryStage, controlData);
+            primaryStage.setScene(gui.menu);
+
+        } catch (WmicException e) {
+            ControlGUI gui = new ControlGUI(pendriveSerial, primaryStage, null);
             primaryStage.setScene(gui.errorWindow(e.getMessage()));
         } catch (IOException e) {
-            ControlGUI gui = new ControlGUI(primaryStage, null);
+            ControlGUI gui = new ControlGUI(pendriveSerial, primaryStage, null);
             if (e.getMessage().equals("No such host is known (ipinfo.io)"))
                 primaryStage.setScene(gui.errorWindow("No Internet"));
             else primaryStage.setScene(gui.errorWindow(e.getMessage()));
         } catch (NoPendriveException e) {
-            ControlGUI gui = new ControlGUI(primaryStage, null);
+            ControlGUI gui = new ControlGUI(pendriveSerial, primaryStage, null);
             primaryStage.setScene(gui.errorWindow(e.getMessage()));
         }
         primaryStage.show();

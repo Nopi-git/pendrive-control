@@ -1,24 +1,23 @@
 package com.nopi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkUtility {
@@ -42,36 +41,21 @@ public class NetworkUtility {
         return ip;
     }
 
-    public static int sendPost(Control control) throws IOException {
-
+    public static int sendPostWithJSON(String pendriveSerial, ControlData controlData) throws IOException{
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://arminbet-pendrive.herokuapp.com/controldata");
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("armId", control.getArmId().toString()));
-        params.add(new BasicNameValuePair("description", control.getDescription()));
-        params.add(new BasicNameValuePair("publicIp", control.getPublicIp()));
-        params.add(new BasicNameValuePair("pcMotherBoardSerialNumber", control.getMotherBoardSerial()));
-        params.add(new BasicNameValuePair("pendriveSerial", control.getPendriveSerial()));
-        params.add(new BasicNameValuePair("location", control.getLocation()));
-        params.add(new BasicNameValuePair("date", control.getDate().toString()));
-        params.add(new BasicNameValuePair("lastBootUpTime", control.getLastBootUpTime()));
-        params.add(new BasicNameValuePair("controlType", control.getControlType()));
-        params.add(new BasicNameValuePair("errorDescription", control.getErrorDescription()));
-        params.add(new BasicNameValuePair("isNewInstall", control.getInstall()));
-        if(control.getControlType().equals("Monetar")){
-            params.add(new BasicNameValuePair("outcome", control.getOutcome().toString()));
-            params.add(new BasicNameValuePair("income", control.getIncome().toString()));
-            params.add(new BasicNameValuePair("chitanta", control.getChitanta().toString()));
-        }
-
-
-        httpPost.setEntity(new UrlEncodedFormEntity(params));
+        HttpPost httpPost = new HttpPost("http://arminbet-backend.herokuapp.com/pendrive/" + pendriveSerial + "/addControl");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(controlData);
+        StringEntity stringEntity = new StringEntity(json, "UTF-8");
+        httpPost.setEntity(stringEntity);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
         CloseableHttpResponse response = client.execute(httpPost);
         client.close();
         return response.getStatusLine().getStatusCode();
     }
 
-    static String readAll(Reader rd) throws IOException{
+    private static String readAll(Reader rd) throws IOException{
         StringBuilder sb = new StringBuilder();
         int cp;
         while((cp = rd.read()) != -1){
@@ -80,7 +64,7 @@ public class NetworkUtility {
         return sb.toString();
     }
 
-    static JSONObject readJSONFromUrl(String url) throws IOException, JSONException{
+    private static JSONObject readJSONFromUrl(String url) throws IOException, JSONException{
         InputStream is = new URL(url).openStream();
         try{
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -97,4 +81,12 @@ public class NetworkUtility {
         JSONObject json = readJSONFromUrl(url);
         return json.get("city").toString();
     }
+
+    public static List<Object> getPendriveSerials() throws IOException {
+        String url = "http://arminbet-backend.herokuapp.com/pendrive/pendriveSerials";
+        JSONObject jsonObject = readJSONFromUrl(url);
+        JSONArray jsonArray = (JSONArray) jsonObject.get("pendriveSerials");
+        return jsonArray.toList();
+    }
+
 }
