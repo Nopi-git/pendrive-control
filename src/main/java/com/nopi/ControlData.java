@@ -1,28 +1,33 @@
 package com.nopi;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class Control {
+public class ControlData {
     private Integer armId;
     private String description;
 
     private String motherBoardSerial;
     private String publicIp;
-    private String pendriveSerial;
     private String location;
     private java.sql.Timestamp date;
     private String lastBootUpTime;
     private String controlType;
-    private BigDecimal income;
-    private BigDecimal outcome;
-    private BigDecimal chitanta;
     private String errorDescription;
-    private String install;
+    private String newInstall;
 
-    public Control(String pendriveSerial) throws IOException, WmicException {
-        this.pendriveSerial = pendriveSerial;
+    private ControlFinancialData controlFinancialData;
+
+    public ControlFinancialData getControlFinancialData() {
+        return controlFinancialData;
+    }
+
+    public ControlData setControlFinancialData(ControlFinancialData controlFinancialData) {
+        this.controlFinancialData = controlFinancialData;
+        return this;
+    }
+
+    public ControlData() throws IOException, WmicException {
         this.publicIp = NetworkUtility.getPublicIp();
         this.motherBoardSerial = PcInformationUtility.getPcModel();
         this.location = NetworkUtility.getPcLocation();
@@ -33,42 +38,18 @@ public class Control {
         return errorDescription;
     }
 
-    public Control setErrorDescription(String errorDescription) {
+    public ControlData setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
         return this;
     }
 
-    public String getInstall() {
-        return install;
+    public String getNewInstall() {
+        return newInstall;
     }
 
-    public Control setInstall(String install) {
-        this.install = install;
+    public ControlData setNewInstall(String newInstall) {
+        this.newInstall = newInstall;
         return this;
-    }
-
-    public BigDecimal getIncome() {
-        return income;
-    }
-
-    public void setIncome(BigDecimal income) {
-        this.income = income;
-    }
-
-    public BigDecimal getOutcome() {
-        return outcome;
-    }
-
-    public void setOutcome(BigDecimal outcome) {
-        this.outcome = outcome;
-    }
-
-    public BigDecimal getChitanta() {
-        return chitanta;
-    }
-
-    public void setChitanta(BigDecimal chitanta) {
-        this.chitanta = chitanta;
     }
 
     public String getLastBootUpTime() {
@@ -127,13 +108,6 @@ public class Control {
         this.publicIp = publicIp;
     }
 
-    public String getPendriveSerial() {
-        return pendriveSerial;
-    }
-
-    public void setPendriveSerial(String pendriveSerial) {
-        this.pendriveSerial = pendriveSerial;
-    }
 
     public Timestamp getDate() {
         return date;
@@ -143,21 +117,4 @@ public class Control {
         this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "Control{" +
-                "armId=" + armId +
-                ", description='" + description + '\'' +
-                ", motherBoardSerial='" + motherBoardSerial + '\'' +
-                ", publicIp='" + publicIp + '\'' +
-                ", pendriveSerial='" + pendriveSerial + '\'' +
-                ", location='" + location + '\'' +
-                ", date=" + date +
-                ", lastBootUpTime='" + lastBootUpTime + '\'' +
-                ", controlType='" + controlType + '\'' +
-                ", income=" + income +
-                ", outcome=" + outcome +
-                ", chitanta=" + chitanta +
-                '}';
-    }
 }

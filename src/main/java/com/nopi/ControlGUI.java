@@ -22,8 +22,8 @@ import java.util.Optional;
 
 public class ControlGUI {
 
-    public Control control;
-    public Scene menu, controlPage, cashPage, errorPage;
+    public ControlData controlData;
+    public Scene menu;
     private Stage stage;
     private List<CheckBox> systemCheckBoxes;
     private List<CheckBox> paperCheckBoxes;
@@ -52,11 +52,13 @@ public class ControlGUI {
     private TextField armValue;
     private CheckBox isInstallCheckbox;
     private TextField ARMTNumber;
+    private String pendriveSerial;
 
-    public ControlGUI(Stage stage, Control control) {
+    public ControlGUI(String pendriveSerial, Stage stage, ControlData controlData) {
+        this.pendriveSerial = pendriveSerial;
         this.menu = menuScene();
         this.stage = stage;
-        this.control = control;
+        this.controlData = controlData;
     }
 
     private static List<CheckBox> makeCheckBoxes(String... systemElements) {
@@ -77,7 +79,7 @@ public class ControlGUI {
         hBox.setPadding(new Insets(25, 12, 15, 12));
         hBox.setSpacing(10);
 
-        //Control
+        //ControlData
         Button controlButton = new Button("CONTROL");
         controlButton.setPrefWidth(100);
         controlButton.setOnAction(e -> this.stage.setScene(controlScene()));
@@ -127,17 +129,17 @@ public class ControlGUI {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeControlDescription();
-                control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setControlType("Control");
-                control.setDescription(description[0]);
-                control.setInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
+                controlData.setArmId(Integer.parseInt(armValue.getText()));
+                controlData.setControlType("Control");
+                controlData.setDescription(description[0]);
+                controlData.setNewInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
                 if (!description[1].equals("")) {
-                    control.setErrorDescription(description[1]);
-                } else control.setErrorDescription("");
-                control.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(control);
+                    controlData.setErrorDescription(description[1]);
+                } else controlData.setErrorDescription("");
+                controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 try {
-                    int statusCode = NetworkUtility.sendPost(control);
+
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -184,15 +186,14 @@ public class ControlGUI {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeCashDescription();
-                control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
-                control.setControlType("Monetar");
-                control.setDescription(description[0]);
+                controlData.setArmId(Integer.parseInt(armValue.getText()));
+                controlData.setNewInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
+                controlData.setControlType("Monetar");
+                controlData.setDescription(description[0]);
                 if (!description[1].equals("")) {
-                    control.setErrorDescription(description[1]);
-                } else control.setErrorDescription("");
-                control.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(control);
+                    controlData.setErrorDescription(description[1]);
+                } else controlData.setErrorDescription("");
+                controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 this.stage.setScene(cashScene());
             } else {
 
@@ -236,17 +237,16 @@ public class ControlGUI {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeErrorDescription();
-                control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setControlType("Error");
-                control.setDescription(description[0]);
-                control.setInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
+                controlData.setArmId(Integer.parseInt(armValue.getText()));
+                controlData.setControlType("Error");
+                controlData.setDescription(description[0]);
+                controlData.setNewInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
                 if (!description[1].equals("")) {
-                    control.setErrorDescription(description[1]);
-                } else control.setErrorDescription("");
-                control.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(control);
+                    controlData.setErrorDescription(description[1]);
+                } else controlData.setErrorDescription("");
+                controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 try {
-                    int statusCode = NetworkUtility.sendPost(control);
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -387,16 +387,18 @@ public class ControlGUI {
     }
 
     private void fillUpControlCashAttributes() {
-        control.setIncome(new BigDecimal(0.00));
-        control.setOutcome(new BigDecimal(0.00));
-        control.setChitanta(new BigDecimal(0.00));
+        ControlFinancialData controlFinancialData = new ControlFinancialData();
+        controlFinancialData.setIncome(new BigDecimal(0.00));
+        controlFinancialData.setOutcome(new BigDecimal(0.00));
+        controlFinancialData.setChitanta(new BigDecimal(0.00));
         if (outcome.isSelected()) {
-            control.setOutcome(new BigDecimal(outcomeValue.getText() + "." + outcomeValueDecimal.getText()));
+            controlFinancialData.setOutcome(new BigDecimal(outcomeValue.getText() + "." + outcomeValueDecimal.getText()));
         }
         if (income.isSelected()) {
-            control.setIncome(new BigDecimal(incomeValue.getText() + "." + incomeValueDecimal.getText()));
-            control.setChitanta(new BigDecimal(chitanta.getText() + "." + chitantaDecimal.getText()));
+            controlFinancialData.setIncome(new BigDecimal(incomeValue.getText() + "." + incomeValueDecimal.getText()));
+            controlFinancialData.setChitanta(new BigDecimal(chitanta.getText() + "." + chitantaDecimal.getText()));
         }
+        controlData.setControlFinancialData(controlFinancialData);
     }
 
     public Scene cashScene() {
@@ -418,9 +420,8 @@ public class ControlGUI {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 fillUpControlCashAttributes();
-                System.out.println(control);
                 try {
-                    int statusCode = NetworkUtility.sendPost(control);
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -975,9 +976,9 @@ public class ControlGUI {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeControlDescription();
-                control.setArmId(Integer.parseInt(armValue.getText()));
-                control.setControlType("Instalare");
-                control.setDescription(description[0]);
+                controlData.setArmId(Integer.parseInt(armValue.getText()));
+                controlData.setControlType("Instalare");
+                controlData.setDescription(description[0]);
                 String install = "";
                 if (installCheckbox.isSelected()) {
                     install += installCheckbox.getText();
@@ -985,14 +986,13 @@ public class ControlGUI {
                 if (isInstallCheckbox.isSelected()) {
                     install += " Instalare Terminal: ARMT" + ARMTNumber.getText();
                 }
-                control.setInstall(install);
+                controlData.setNewInstall(install);
                 if (!description[1].equals("")) {
-                    control.setErrorDescription(description[1]);
-                } else control.setErrorDescription("");
-                control.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(control);
+                    controlData.setErrorDescription(description[1]);
+                } else controlData.setErrorDescription("");
+                controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 try {
-                    int statusCode = NetworkUtility.sendPost(control);
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
