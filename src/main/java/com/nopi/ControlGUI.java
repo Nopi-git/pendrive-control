@@ -23,7 +23,7 @@ import java.util.Optional;
 public class ControlGUI {
 
     public ControlData controlData;
-    public Scene menu, controlPage, cashPage, errorPage;
+    public Scene menu;
     private Stage stage;
     private List<CheckBox> systemCheckBoxes;
     private List<CheckBox> paperCheckBoxes;
@@ -52,8 +52,10 @@ public class ControlGUI {
     private TextField armValue;
     private CheckBox isInstallCheckbox;
     private TextField ARMTNumber;
+    private String pendriveSerial;
 
-    public ControlGUI(Stage stage, ControlData controlData) {
+    public ControlGUI(String pendriveSerial, Stage stage, ControlData controlData) {
+        this.pendriveSerial = pendriveSerial;
         this.menu = menuScene();
         this.stage = stage;
         this.controlData = controlData;
@@ -114,7 +116,7 @@ public class ControlGUI {
     }
 
     private Scene controlScene() {
-        GridPane gridPane = controlPane(controlSystemVBox(false, true, false), new Label("ControlData"), true, false);
+        GridPane gridPane = controlPane(controlSystemVBox(false, true, false), new Label("Control"), true, false);
         gridPane.setPadding(new Insets(10, 15, 5, 15));
 
 
@@ -128,17 +130,16 @@ public class ControlGUI {
             if (result.get() == ButtonType.OK) {
                 String[] description = writeControlDescription();
                 controlData.setArmId(Integer.parseInt(armValue.getText()));
-                controlData.setControlType("ControlData");
+                controlData.setControlType("Control");
                 controlData.setDescription(description[0]);
                 controlData.setNewInstall(installCheckbox.isSelected() ? installCheckbox.getText() : "");
                 if (!description[1].equals("")) {
                     controlData.setErrorDescription(description[1]);
                 } else controlData.setErrorDescription("");
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(controlData);
                 try {
 
-                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -193,7 +194,6 @@ public class ControlGUI {
                     controlData.setErrorDescription(description[1]);
                 } else controlData.setErrorDescription("");
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(controlData);
                 this.stage.setScene(cashScene());
             } else {
 
@@ -245,9 +245,8 @@ public class ControlGUI {
                     controlData.setErrorDescription(description[1]);
                 } else controlData.setErrorDescription("");
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(controlData);
                 try {
-                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -421,9 +420,8 @@ public class ControlGUI {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 fillUpControlCashAttributes();
-                System.out.println(controlData);
                 try {
-                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -993,9 +991,8 @@ public class ControlGUI {
                     controlData.setErrorDescription(description[1]);
                 } else controlData.setErrorDescription("");
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
-                System.out.println(controlData);
                 try {
-                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }

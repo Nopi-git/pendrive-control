@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PendriveUtility {
     private List<String> serialNumbers = new ArrayList<String>();
@@ -12,6 +13,14 @@ public class PendriveUtility {
 
     public PendriveUtility() throws IOException{
         fillListWithUSBSerials();
+    }
+
+    public String getValidPendriveSerial() throws IOException, NoPendriveException {
+        List<Object> array = NetworkUtility.getPendriveSerials();
+        List<Object> result = array.stream().filter(serialNumbers::contains).collect(Collectors.toList());
+        if(result.size()>0){
+            return (String) result.get(0);
+        }else throw new NoPendriveException("No valid pendrive in PC");
     }
 
     private void fillListWithUSBSerials() throws IOException{
@@ -28,10 +37,5 @@ public class PendriveUtility {
         input.close();
         this.serialNumbers.remove(0);
         this.serialNumbers.remove(this.serialNumbers.size()-1);
-    }
-    public boolean serialInList(String serial) throws NoPendriveException {
-        return true;
-        /*if(this.serialNumbers.contains(serial)) return true;
-        else throw new NoPendriveException("No valid pendrive in PC");*/
     }
 }

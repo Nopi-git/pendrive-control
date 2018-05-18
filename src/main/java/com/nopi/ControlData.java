@@ -1,7 +1,6 @@
 package com.nopi;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class ControlData {
@@ -10,7 +9,6 @@ public class ControlData {
 
     private String motherBoardSerial;
     private String publicIp;
-    private String pendriveSerial;
     private String location;
     private java.sql.Timestamp date;
     private String lastBootUpTime;
@@ -29,8 +27,7 @@ public class ControlData {
         return this;
     }
 
-    public ControlData(String pendriveSerial) throws IOException, WmicException {
-        this.pendriveSerial = pendriveSerial;
+    public ControlData() throws IOException, WmicException {
         this.publicIp = NetworkUtility.getPublicIp();
         this.motherBoardSerial = PcInformationUtility.getPcModel();
         this.location = NetworkUtility.getPcLocation();
@@ -111,13 +108,6 @@ public class ControlData {
         this.publicIp = publicIp;
     }
 
-    public String getPendriveSerial() {
-        return pendriveSerial;
-    }
-
-    public void setPendriveSerial(String pendriveSerial) {
-        this.pendriveSerial = pendriveSerial;
-    }
 
     public Timestamp getDate() {
         return date;
@@ -127,21 +117,4 @@ public class ControlData {
         this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "ControlData{" +
-                "armId=" + armId +
-                ", description='" + description + '\'' +
-                ", motherBoardSerial='" + motherBoardSerial + '\'' +
-                ", publicIp='" + publicIp + '\'' +
-                ", pendriveSerial='" + pendriveSerial + '\'' +
-                ", location='" + location + '\'' +
-                ", date=" + date +
-                ", lastBootUpTime='" + lastBootUpTime + '\'' +
-                ", controlType='" + controlType + '\'' +
-                ", errorDescription='" + errorDescription + '\'' +
-                ", newInstall='" + newInstall + '\'' +
-                ", controlFinancialData=" + controlFinancialData +
-                '}';
-    }
 }
