@@ -1,9 +1,12 @@
 package com.nopi;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.IOException;
 import java.sql.Timestamp;
 
 public class ControlData {
+    @JsonIgnore
     private Integer armId;
     private String description;
 
@@ -116,5 +119,7 @@ public class ControlData {
     public void setDate(Timestamp date) {
         this.date = date;
     }
+
+
 
 }

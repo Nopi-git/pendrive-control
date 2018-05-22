@@ -43,7 +43,7 @@ public class NetworkUtility {
 
     public static int sendPostWithJSON(String pendriveSerial, ControlData controlData) throws IOException{
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://arminbet-backend.herokuapp.com/pendrive/" + pendriveSerial + "/addControl");
+        HttpPost httpPost = new HttpPost("http://localhost:60000/pendrive/" + controlData.getArmId() + "/" + pendriveSerial + "/addControl");
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(controlData);
         StringEntity stringEntity = new StringEntity(json, "UTF-8");
@@ -83,7 +83,7 @@ public class NetworkUtility {
     }
 
     public static List<Object> getPendriveSerials() throws IOException {
-        String url = "http://arminbet-backend.herokuapp.com/pendrive/pendriveSerials";
+        String url = "http://localhost:60000/pendrive/pendriveSerials";
         JSONObject jsonObject = readJSONFromUrl(url);
         JSONArray jsonArray = (JSONArray) jsonObject.get("pendriveSerials");
         return jsonArray.toList();

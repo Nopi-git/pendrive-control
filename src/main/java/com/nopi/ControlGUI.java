@@ -125,7 +125,7 @@ public class ControlGUI {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
             alert.setHeaderText("Toate informatiile sunt corecte?");
-            alert.setContentText("Apasa ok pentru a trimte informatia la server");
+            alert.setContentText("Apasa ok pentru a trimite informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeControlDescription();
@@ -182,7 +182,7 @@ public class ControlGUI {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
             alert.setHeaderText("Toate informatiile sunt corecte?");
-            alert.setContentText("Apasa ok pentru a trimte informatia la server");
+            alert.setContentText("Apasa ok pentru a trimite informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeCashDescription();
@@ -233,7 +233,7 @@ public class ControlGUI {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
             alert.setHeaderText("Toate informatiile sunt corecte?");
-            alert.setContentText("Apasa ok pentru a trimte informatia la server");
+            alert.setContentText("Apasa ok pentru a trimite informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeErrorDescription();
@@ -416,7 +416,7 @@ public class ControlGUI {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
             alert.setHeaderText("Toate informatiile sunt corecte?");
-            alert.setContentText("Apasa ok pentru a trimte informatia la server");
+            alert.setContentText("Apasa ok pentru a trimite informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 fillUpControlCashAttributes();
@@ -972,7 +972,7 @@ public class ControlGUI {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Dialog");
             alert.setHeaderText("Toate informatiile sunt corecte?");
-            alert.setContentText("Apasa ok pentru a trimte informatia la server");
+            alert.setContentText("Apasa ok pentru a trimite informatia la server");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 String[] description = writeControlDescription();
