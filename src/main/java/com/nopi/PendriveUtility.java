@@ -11,7 +11,7 @@ public class PendriveUtility {
     private List<String> serialNumbers = new ArrayList<String>();
 
 
-    public PendriveUtility() throws IOException{
+    public PendriveUtility() throws IOException, WmicException {
         fillListWithUSBSerials();
     }
 
@@ -23,7 +23,7 @@ public class PendriveUtility {
         }else throw new NoPendriveException("No valid pendrive in PC");
     }
 
-    private void fillListWithUSBSerials() throws IOException{
+    private void fillListWithUSBSerials() throws IOException, WmicException {
         String line;
         int counter = 0;
         Process process = Runtime.getRuntime().exec("wmic diskdrive get serialnumber");
@@ -35,7 +35,11 @@ public class PendriveUtility {
             this.serialNumbers.add(serial);
         }
         input.close();
-        this.serialNumbers.remove(0);
-        this.serialNumbers.remove(this.serialNumbers.size()-1);
+        try{
+            this.serialNumbers.remove(0);
+            this.serialNumbers.remove(this.serialNumbers.size()-1);
+        } catch (IndexOutOfBoundsException e){
+            throw new WmicException(e.getMessage());
+        }
     }
 }

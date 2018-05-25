@@ -139,7 +139,7 @@ public class ControlGUI {
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 try {
 
-                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -246,7 +246,7 @@ public class ControlGUI {
                 } else controlData.setErrorDescription("");
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 try {
-                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -421,7 +421,7 @@ public class ControlGUI {
             if (result.get() == ButtonType.OK) {
                 fillUpControlCashAttributes();
                 try {
-                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }
@@ -992,7 +992,7 @@ public class ControlGUI {
                 } else controlData.setErrorDescription("");
                 controlData.setDate(new Timestamp(System.currentTimeMillis()));
                 try {
-                    int statusCode = NetworkUtility.sendPostWithJSON(pendriveSerial ,controlData);
+                    int statusCode = NetworkUtility.sendPostWithJSON(controlData);
                     if (statusCode == 200) {
                         System.exit(0);
                     }

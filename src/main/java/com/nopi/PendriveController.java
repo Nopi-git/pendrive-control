@@ -22,12 +22,13 @@ public class PendriveController extends Application {
             PendriveUtility pendriveUtility = new PendriveUtility();
             pendriveSerial = pendriveUtility.getValidPendriveSerial();
             controlData = new ControlData();
+            controlData.setEmployeeId(NetworkUtility.getEmployeeIdFromPendriveSerial(pendriveSerial));
             ControlGUI gui = new ControlGUI(pendriveSerial, primaryStage, controlData);
             primaryStage.setScene(gui.menu);
 
         } catch (WmicException e) {
             ControlGUI gui = new ControlGUI(pendriveSerial, primaryStage, null);
-            primaryStage.setScene(gui.errorWindow(e.getMessage()));
+            primaryStage.setScene(gui.errorWindow("Install packaged windows update!"));
         } catch (IOException e) {
             ControlGUI gui = new ControlGUI(pendriveSerial, primaryStage, null);
             if (e.getMessage().equals("No such host is known (ipinfo.io)"))

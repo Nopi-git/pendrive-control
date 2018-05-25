@@ -41,9 +41,9 @@ public class NetworkUtility {
         return ip;
     }
 
-    public static int sendPostWithJSON(String pendriveSerial, ControlData controlData) throws IOException{
+    public static int sendPostWithJSON(ControlData controlData) throws IOException{
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://localhost:60000/pendrive/" + controlData.getArmId() + "/" + pendriveSerial + "/addControl");
+        HttpPost httpPost = new HttpPost("http://localhost:60001/control");
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(controlData);
         StringEntity stringEntity = new StringEntity(json, "UTF-8");
@@ -87,6 +87,12 @@ public class NetworkUtility {
         JSONObject jsonObject = readJSONFromUrl(url);
         JSONArray jsonArray = (JSONArray) jsonObject.get("pendriveSerials");
         return jsonArray.toList();
+    }
+
+    public static Long getEmployeeIdFromPendriveSerial(String pendriveSerial) throws IOException {
+        String url = "http://localhost:60000/employee/pendrive="+pendriveSerial;
+        JSONObject jsonObject = readJSONFromUrl(url);
+        return Long.parseLong(jsonObject.get("id").toString());
     }
 
 }

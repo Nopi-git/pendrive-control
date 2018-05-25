@@ -6,10 +6,9 @@ import java.io.IOException;
 import java.sql.Timestamp;
 
 public class ControlData {
-    @JsonIgnore
     private Integer armId;
     private String description;
-
+    private Long employeeId;
     private String motherBoardSerial;
     private String publicIp;
     private String location;
@@ -120,6 +119,30 @@ public class ControlData {
         this.date = date;
     }
 
+    public Long getEmployeeId() {
+        return employeeId;
+    }
 
+    public ControlData setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+        return this;
+    }
 
+    @Override
+    public String toString() {
+        return "ControlData{" +
+                "armId=" + armId +
+                ", description='" + description + '\'' +
+                ", employeeId=" + employeeId +
+                ", motherBoardSerial='" + motherBoardSerial + '\'' +
+                ", publicIp='" + publicIp + '\'' +
+                ", location='" + location + '\'' +
+                ", date=" + date +
+                ", lastBootUpTime='" + lastBootUpTime + '\'' +
+                ", controlType='" + controlType + '\'' +
+                ", errorDescription='" + errorDescription + '\'' +
+                ", newInstall='" + newInstall + '\'' +
+                ", controlFinancialData=" + controlFinancialData +
+                '}';
+    }
 }
