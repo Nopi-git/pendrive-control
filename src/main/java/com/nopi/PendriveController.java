@@ -15,7 +15,7 @@ public class PendriveController extends Application {
     @Override
     public void start(Stage primaryStage) {
         ControlData controlData;
-        primaryStage.setTitle("ArminBet-ControlData-V1.2-ALPHA");
+        primaryStage.setTitle("ArminBet-ControlData-V1.3-ALPHA");
         String pendriveSerial = "";
 
         try {
